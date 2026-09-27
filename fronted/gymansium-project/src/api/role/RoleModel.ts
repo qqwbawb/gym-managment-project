@@ -1,0 +1,16 @@
+//角色数据类型
+export type AddRoleModel = {
+    type: string
+    roleId: string
+    roleName: string
+    remark: string
+}
+
+//分页查询数据类型
+export type ListParm = {
+    roleName: string
+    currentPage: number
+    pageSize: number
+    total: number
+}
+
