@@ -7,7 +7,7 @@ export type AddRoleModel = {
 }
 
 //分页查询数据类型
-export type ListParm = {
+export type ListParam = {
     roleName: string
     currentPage: number
     pageSize: number

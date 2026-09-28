@@ -44,6 +44,25 @@
 - 配置 `spring.mvc.pathmatch.matching-strategy=ant_path_matcher`，解决 Spring Boot 2.7 与 Swagger 2.9.2 兼容问题
 - 控制台日志输出改为彩色分级格式
 
+## [0.3.0] - 2026-09-28
+
+### 新增（feat）
+
+#### 角色管理模块功能完善
+- 前端完成角色列表联调：表格展示、搜索、重置、分页（页码/容量切换）、列表高度自适应
+- 新增/编辑弹框支持角色类型选择（员工类型 / 会员类型），编辑模式数据回显
+- 完成新增、编辑、删除接口对接：删除带确认提示，操作成功后自动刷新列表并提示
+
+#### 前端公共能力建设
+- Element Plus 启用中文国际化（zhCn）
+- 新增工具层 `src/utils/`：`objCopy` 对象拷贝、`myconfirm` 信息确认提示框（全局挂载 `$objCoppy` / `$myconfirm`）
+- 新增 `useInstance` Hook，统一获取组件实例与全局属性
+- 新增枚举定义 `BaseEnum`（EditType / Title / UserType），`BaseType` 补充通用函数类型
+
+### 优化（improve）
+- 调整 Element Plus 注册与全局属性挂载顺序
+- 移除 tsconfig 中不再需要的 `erasableSyntaxOnly` 配置
+
 ## [未发布]
 
 ### 规划（planned）

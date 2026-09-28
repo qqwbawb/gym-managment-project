@@ -5,3 +5,6 @@ export type DialogModel = {
   height: number,
   width: number
 }
+
+//通用函数类型
+export type FuncList = () => any
