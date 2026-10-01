@@ -63,10 +63,24 @@
 - 调整 Element Plus 注册与全局属性挂载顺序
 - 移除 tsconfig 中不再需要的 `erasableSyntaxOnly` 配置
 
+## [0.4.0] - 2026-10-01
+
+### 新增（feat）
+
+#### 用户管理模块（员工管理）
+- 后端新增 `sys_user` 模块：`SysUser` 实体、Mapper + 映射文件、Service 业务层、`SysUserController`
+- 完成员工接口开发：新增（MD5 密码加密 + 重名校验）、编辑、删除、分页列表（密码脱敏）、重置密码（默认 123456）、按用户查询角色
+- 后端新增 `sys_user_role` 模块（用户-角色中间表）：实体、Mapper + 映射文件、Service
+- 前端新增 `api/user` 与 `composables/user`（useUser / useTable / useSelectRole）
+- 新增员工页面 `AddUser.vue`；`UserList.vue` 完成列表联调：搜索（电话/姓名）、表格展示、分页、编辑/删除/重置密码操作、权限指令 `v-permission`
+
+#### 角色模块补充
+- 新增角色下拉接口 `/api/role/getSelect` 与 `SelectType` 实体，用于新增/编辑员工时选择角色
+
 ## [未发布]
 
 ### 规划（planned）
 - 数据库初始化脚本（docs/sql/）
-- 业务模块开发：用户管理、菜单管理、会员卡、会员、办卡充值、课程、器材、商品、失物招领、反馈
+- 业务模块开发：菜单管理、会员卡、会员、办卡充值、课程、器材、商品、失物招领、反馈
 - 登录认证（验证码 + JWT）、权限树分配、动态菜单
 - 数据统计看板（ECharts）、Spring Security 认证授权

@@ -80,8 +80,7 @@ const show = (type: string, row?: AddRoleModel) => {
   dialog.height = 150;
   dialog.width = 630;
   //设置标题
-  type == EditType.ADD ? (dialog.title = Title.ADD) :
-(dialog.title = Title.EDIT);
+  type == EditType.ADD ? (dialog.title = Title.ADD) :(dialog.title = Title.EDIT);
   //如果是编辑，需要回显数据
   addModel.type = type;
   dialog.visible = true;

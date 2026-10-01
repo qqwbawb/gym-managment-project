@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> implements SysRoleService {
     @Override
     public IPage<SysRole> list(RoleParm roleParm) {
-        //配置分页对象
-        IPage<SysRole> page=new Page<>();
         //构造分页对象
+        IPage<SysRole> page=new Page<>();
+        //配置分页对象
         page.setSize(roleParm.getPageSize());
         page.setCurrent(roleParm.getCurrentPage());
         //构造分页查询条件
