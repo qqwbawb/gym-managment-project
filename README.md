@@ -74,7 +74,7 @@ GymSystem
 - 封装通用弹框组件 `SysDialog` 与 `useDialog` Hook
 - 系统管理 / 会员管理页面框架（员工、角色、菜单、会员卡、会员、我的充值）
 
-### 已完成：阶段二（部分）—— 角色管理、用户管理模块
+### 已完成：阶段二 —— 角色管理、用户管理、菜单管理模块
 
 **角色管理**
 - 后端角色管理 CRUD 接口（实体 / Mapper / Service / Controller），含角色下拉接口 `/api/role/getSelect`
@@ -86,16 +86,29 @@ GymSystem
 - 前端员工列表：搜索（电话/姓名）、表格展示（性别/类型/状态标签）、分页、编辑/删除/重置密码操作、权限指令 `v-permission`
 - 新增员工页面 `AddUser.vue`（含角色选择）
 
+**菜单管理**
+- 后端 `sys_menu` 模块：`SysMenu` 实体、树形构造工具 `MakeMenuTree`、Mapper + 映射文件、Service、Controller
+- 前端菜单列表联调、新增菜单 `AddMenu.vue`、上级菜单选择 `ParentMenu.vue`
+
 **前端公共能力**
 - Element Plus 中文国际化、`$objCoppy` / `$myconfirm` 全局工具、`useInstance` Hook、枚举定义
+
+### 已完成：阶段三（部分）—— 会员卡类型管理
+
+**后端**
+- `member_card` 模块：`MemberCard` / `ListCard` 实体、Mapper + 映射文件、Service、Controller
+- 会员卡接口：新增、修改、删除、分页列表（按标题模糊查询）
+
+**前端**
+- 会员卡列表 `CardType.vue` 联调、新增/编辑页面 `AddCard.vue`、`api/member_card` / `composables/member_card` 业务层
 
 ### 开发路线图
 
 | 阶段 | 内容 | 状态 |
 |------|------|------|
 | 阶段一 | 工程搭建与基础框架（后端多模块 + 前端布局） | 已完成 |
-| 阶段二 | 系统管理模块：角色管理（已完成）、员工管理（已完成）、菜单 CRUD 与权限分配 | 开发中 |
-| 阶段三 | 会员业务：会员卡类型、会员信息、办卡、充值 | 待开发 |
+| 阶段二 | 系统管理模块：角色、员工、菜单管理 | 已完成 |
+| 阶段三 | 会员业务：会员卡类型（已完成）、会员信息、办卡、充值 | 开发中 |
 | 阶段四 | 课程管理：课程维护、图片上传、选课报名 | 待开发 |
 | 阶段五 | 业务扩展：器材、商品、订单、失物招领、反馈 | 待开发 |
 | 阶段六 | 登录认证（验证码 + JWT）、Spring Security 权限、首页数据看板 | 待开发 |

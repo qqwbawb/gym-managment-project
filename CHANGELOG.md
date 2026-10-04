@@ -77,10 +77,25 @@
 #### 角色模块补充
 - 新增角色下拉接口 `/api/role/getSelect` 与 `SelectType` 实体，用于新增/编辑员工时选择角色
 
+## [0.5.0] - 2026-10-03
+
+### 新增（feat）
+
+#### 菜单管理模块
+- 后端新增 `sys_menu` 模块：`SysMenu` 实体、树形构造工具 `MakeMenuTree`、`RouterVo`、Mapper + 映射文件、Service、`SysMenuController`
+- 前端新增 `api/menu` 与 `composables/menu`（useMenu / useMenuTable）
+- 新增菜单页面 `AddMenu.vue`、上级菜单选择组件 `ParentMenu.vue`，`MenuList.vue` 完成列表联调
+
+#### 会员卡管理模块
+- 后端新增 `member_card` 模块：`MemberCard` / `ListCard` 实体、Mapper + 映射文件、Service、`MemberCardController`
+- 完成会员卡接口开发：新增、修改、删除、分页列表（按标题模糊查询）
+- 前端新增 `api/member_card` 与 `composables/member_card`（useMember / useMemberTable）
+- 新增会员卡页面 `AddCard.vue`，`CardType.vue` 完成列表联调
+
 ## [未发布]
 
 ### 规划（planned）
 - 数据库初始化脚本（docs/sql/）
-- 业务模块开发：菜单管理、会员卡、会员、办卡充值、课程、器材、商品、失物招领、反馈
+- 业务模块开发：会员、办卡充值、课程、器材、商品、失物招领、反馈
 - 登录认证（验证码 + JWT）、权限树分配、动态菜单
 - 数据统计看板（ECharts）、Spring Security 认证授权
