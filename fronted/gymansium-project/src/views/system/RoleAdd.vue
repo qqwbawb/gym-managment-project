@@ -50,8 +50,6 @@ import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus" 
 import { addApi, editApi } from "@/api/role/index";
 import { EditType, Title } from "@/type/BaseEnum";
-import useInstance from "@/hooks/useInstance";
-const { global } = useInstance();
 //表单的ref属性
 const addFormRef = ref<FormInstance>();
 //定义表单绑定的属性

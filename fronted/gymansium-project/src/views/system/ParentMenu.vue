@@ -58,7 +58,7 @@
   import { getParentApi } from "@/api/menu";
   import { reactive,ref } from "vue";
   import type { MenuType, SelectNode } from "@/api/menu/MenuModel";
-  import { ElMessage,ElTree } from "element-plus";
+  import { ElTree } from "element-plus";
   //树的ref属性
   const parentTree = ref<InstanceType<typeof ElTree>>();
   //树属性配置

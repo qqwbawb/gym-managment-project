@@ -93,14 +93,22 @@ GymSystem
 **前端公共能力**
 - Element Plus 中文国际化、`$objCoppy` / `$myconfirm` 全局工具、`useInstance` Hook、枚举定义
 
-### 已完成：阶段三（部分）—— 会员卡类型管理
+### 已完成：阶段三 —— 会员卡类型、会员管理、办卡充值
 
-**后端**
-- `member_card` 模块：`MemberCard` / `ListCard` 实体、Mapper + 映射文件、Service、Controller
+**会员卡类型管理**
+- 后端 `member_card` 模块：`MemberCard` / `ListCard` 实体、Mapper + 映射文件、Service、Controller
 - 会员卡接口：新增、修改、删除、分页列表（按标题模糊查询）
+- 前端会员卡列表 `CardType.vue` 联调、新增/编辑页面 `AddCard.vue`
 
-**前端**
-- 会员卡列表 `CardType.vue` 联调、新增/编辑页面 `AddCard.vue`、`api/member_card` / `composables/member_card` 业务层
+**会员管理**
+- 后端 `member` 模块：`Member` / `JoinParam` / `RechargeParam` 实体、Mapper + 映射文件、Service、Controller
+- 会员接口：新增（卡号去重）、编辑、删除、分页列表（姓名/电话/卡号模糊查询）、按会员查询角色
+- 前端会员列表 `MemberList.vue` 联调、新增会员 `AddMember.vue`
+
+**办卡与充值**
+- 后端 `member_apple`（办卡申请）、`member_recharge`（充值）、`member_role`（会员-角色中间表）模块
+- 办卡接口 `/api/member/joinApply`（选择启用中会员卡）、充值接口 `/api/member/recharge`
+- 前端办卡页面 `JoinApply.vue`、充值页面 `Recharge.vue`
 
 ### 开发路线图
 
@@ -108,7 +116,7 @@ GymSystem
 |------|------|------|
 | 阶段一 | 工程搭建与基础框架（后端多模块 + 前端布局） | 已完成 |
 | 阶段二 | 系统管理模块：角色、员工、菜单管理 | 已完成 |
-| 阶段三 | 会员业务：会员卡类型（已完成）、会员信息、办卡、充值 | 开发中 |
+| 阶段三 | 会员业务：会员卡类型、会员信息、办卡、充值 | 已完成 |
 | 阶段四 | 课程管理：课程维护、图片上传、选课报名 | 待开发 |
 | 阶段五 | 业务扩展：器材、商品、订单、失物招领、反馈 | 待开发 |
 | 阶段六 | 登录认证（验证码 + JWT）、Spring Security 权限、首页数据看板 | 待开发 |

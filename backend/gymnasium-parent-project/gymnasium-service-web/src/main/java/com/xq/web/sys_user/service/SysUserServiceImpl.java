@@ -20,8 +20,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         page.setCurrent(param.getCurrentPage());
 
         QueryWrapper<SysUser> query=new QueryWrapper<>();
-        if(StringUtils.isNotBlank(param.getNickNme())){
-            query.lambda().like(SysUser::getNickName,param.getNickNme());
+        if(StringUtils.isNotBlank(param.getNickName())){
+            query.lambda().like(SysUser::getNickName,param.getNickName());
         }
         if(StringUtils.isNotBlank(param.getPhone())){
             query.lambda().like(SysUser::getPhone,param.getPhone());

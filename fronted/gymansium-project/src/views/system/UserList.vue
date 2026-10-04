@@ -70,12 +70,13 @@ type="danger" size="default">教练</el-tag>
 </template>
 <script setup lang="ts">
 import AddUser from "./AddUser.vue";
-import { Plus, Edit, Delete, Search, Close } from "@element-plus/icons-vue";
+import { Plus, Edit, Delete, Search } from "@element-plus/icons-vue";
 import useTable from "@/composables/user/useTable";
 import useUser from "@/composables/user/useUser";
 //表格
 const { listParam,getList,searchBtn,resetBtn,tableList,sizeChange,currentChange,tableHeight,refresh } = useTable();
 //新增、编辑
 const { addBtn, editBtn, deleteBtn,resetPwdBtn,addRef } = useUser(getList);
+void addRef;
 </script>
 <style scoped></style>

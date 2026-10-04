@@ -92,10 +92,29 @@
 - 前端新增 `api/member_card` 与 `composables/member_card`（useMember / useMemberTable）
 - 新增会员卡页面 `AddCard.vue`，`CardType.vue` 完成列表联调
 
+## [0.6.0] - 2026-10-04
+
+### 新增（feat）
+
+#### 会员管理模块
+- 后端新增 `member` 模块：`Member` / `PageParam` / `JoinParam` / `RechargeParam` 实体、Mapper + 映射文件、Service、`MemberController`
+- 完成会员接口开发：新增（会员卡号去重）、编辑、删除、分页列表（姓名/电话/卡号模糊查询）、按会员查询角色、启用中会员卡列表查询
+- 前端新增 `api/member` 与 `composables/member`（useMember / useTable / useJoin / useRecharge）
+- 新增会员页面 `AddMember.vue`，`MemberList.vue` 完成列表联调
+
+#### 办卡与充值模块
+- 后端新增 `member_apple`（办卡申请）、`member_recharge`（充值）、`member_role`（会员-角色中间表）模块：实体、Mapper + 映射文件、Service
+- 完成办卡接口 `/api/member/joinApply`、充值接口 `/api/member/recharge`
+- 前端新增办卡页面 `JoinApply.vue`、充值页面 `Recharge.vue`
+
+### 工程优化（improve）
+- 后端 Mapper 映射文件统一整理到 `resources/mapper/` 目录
+- 修复用户分页参数 `nickNme` → `nickName` 拼写错误
+
 ## [未发布]
 
 ### 规划（planned）
 - 数据库初始化脚本（docs/sql/）
-- 业务模块开发：会员、办卡充值、课程、器材、商品、失物招领、反馈
-- 登录认证（验证码 + JWT）、权限树分配、动态菜单
+- 业务模块开发：课程、器材、商品、失物招领、反馈
+- 登录认证（验证码 + JWT）、权限树分配、动态菜单、我的充值
 - 数据统计看板（ECharts）、Spring Security 认证授权

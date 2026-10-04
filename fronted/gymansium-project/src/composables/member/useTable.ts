@@ -1,28 +1,23 @@
-import { getListApi } from "@/api/member_card";
-import type { ListParam } from "@/api/member_card/MemberModel";
+import { getListApi } from "@/api/member";
+import type { MemberParam } from "@/api/member/MemberModel";
 import { nextTick, onMounted, reactive, ref } from "vue";
 
+export default function useTable() {
 
-export default function useMemberTable() {
-
-    //表格高度
     const tableHeight = ref(0)
-    //表格数据
     const tableList = reactive({
         list: []
     })
 
-    //定义查询参数
-    const listParam = reactive<ListParam>(
-        {
-            title: '',
-            pageSize: 10,
-            currentPage: 1,
-            total: 0
-        }
-    )
+    const listParam = reactive<MemberParam>({
+        name: '',
+        phone: '',
+        username: '',
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+    })
 
-    //查询列表
     const getList = async () => {
         let res = await getListApi(listParam)
         if (res && res.code == 200) {
@@ -31,30 +26,27 @@ export default function useMemberTable() {
         }
     }
 
-    //搜索
     const searchBtn = () => {
         getList()
     }
 
-    //重置
     const resetBtn = () => {
-        listParam.title = ''
+        listParam.name = ''
+        listParam.phone = ''
+        listParam.username = ''
         getList()
     }
 
-    //页面容量改变时触发
     const sizeChange = (size: number) => {
         listParam.pageSize = size
         getList()
     }
 
-    //页数改变时触发
     const currentChange = (page: number) => {
         listParam.currentPage = page
         getList()
     }
 
-    //刷新
     const refresh = () => {
         getList()
     }
@@ -71,10 +63,10 @@ export default function useMemberTable() {
         getList,
         searchBtn,
         resetBtn,
+        tableHeight,
+        tableList,
         sizeChange,
         currentChange,
-        refresh,
-        tableHeight,
-        tableList
+        refresh
     }
 }

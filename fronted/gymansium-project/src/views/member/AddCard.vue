@@ -72,7 +72,7 @@ const { global } = useInstance();
 //表单ref属性
 const addFormRef = ref<FormInstance>();
 //弹框属性
-const { dialog, onClose, onConfirm, onShow } = useDialog();
+const { dialog, onClose, onShow } = useDialog();
 //显示弹框
 const show = (type: string, row?: CardType) => {
   dialog.height = 200;

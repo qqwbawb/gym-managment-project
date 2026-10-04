@@ -67,13 +67,14 @@
 
 <script setup lang="ts">
     import AddMenu from "./AddMenu.vue";
-    import { Plus, Edit, Delete, Search, Close } from "@element-plus/icons-vue";
+    import { Plus, Edit, Delete } from "@element-plus/icons-vue";
     import useMenu from "@/composables/menu/useMenu";
     import useMenuTable from "@/composables/menu/useMenuTable";
     //表格数据
     const { tableList, tableHeight, refresh,getList } =useMenuTable();
     //新增、编辑
     const { addBtn, editBtn, deleteBtn, addRef } =useMenu(getList);
+    void addRef;
 </script>
 
 <style scoped></style>

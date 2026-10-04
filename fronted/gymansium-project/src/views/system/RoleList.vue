@@ -49,5 +49,6 @@
 const { listParam, getList, searchBtn,resetBtn,tableList,sizeChange,currentChange,tableHeight,refresh} = useTable();
  //增删改查业务
  const { addBtn, editBtn, deleteBtn,addRef } = useRole(getList);
+ void addRef;
  </script>
  <style scoped></style>

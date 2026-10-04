@@ -3,7 +3,6 @@ import { EditType } from '@/type/BaseEnum'
 import type { FuncList } from '@/type/BaseType'
 import { ref } from 'vue'
 import { deleteApi } from '@/api/role'
-import { ElMessage } from 'element-plus'
 import useInstance from '@/hooks/useInstance'
 
 export default function useRole(getList: FuncList) {

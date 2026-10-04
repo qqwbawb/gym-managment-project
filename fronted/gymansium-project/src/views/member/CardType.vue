@@ -7,9 +7,7 @@
       </el-form-item>
       <el-form-item>
         <el-button :icon="Search" @click="searchBtn">搜索</el-button>
-        <el-button :icon="Close" type="danger" plain@click="resetBtn"
-          >重置</el-button
-        >
+        <el-button :icon="Close" type="danger" plain @click="resetBtn">重置</el-button>
         <el-button v-permission="['sys:memberRoot:add']":icon="Plus" type="primary" @click="addBtn">新增</el-button>
       </el-form-item>
     </el-form>
@@ -57,12 +55,12 @@
 <script setup lang="ts">
 import AddCard from "./AddCard.vue";
 import { Plus, Edit, Delete, Search, Close } from "@element-plus/icons-vue";
-import useMemberTable from
-"@/composables/member_card/useMemberTable";
+import useMemberTable from"@/composables/member_card/useMemberTable";
 import useMember from "@/composables/member_card/useMember";
 //表格操作
 const { listParam, getList, resetBtn,searchBtn,tableList,sizeChange,currentChange,tableHeight,refresh} = useMemberTable();
 //新增、编辑
 const { addBtn, editBtn, deleteBtn,addRef } = useMember(getList);
+void addRef;
 </script>
 <style scoped></style>

@@ -1,6 +1,5 @@
 import { onMounted, reactive, ref, nextTick } from "vue";
 import { getListApi } from "@/api/menu";
-import { List } from "@element-plus/icons-vue";
 
 export default function useMenuTable() {
 

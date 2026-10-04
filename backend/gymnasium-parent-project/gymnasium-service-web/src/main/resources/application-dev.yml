@@ -17,6 +17,7 @@ mybatis-plus:
   global-config:
     db-config:
       update-strategy: not_empty #只更新非空和非null的
+
 #定义日志输出格式
 logging:
   pattern:
