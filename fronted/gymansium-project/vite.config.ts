@@ -16,5 +16,10 @@ export default defineConfig({
       // 新版 Vite(ESM) 使用 fileURLToPath 替代 __dirname，兼容性更好
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  define: {
+    'process.env': {
+      'BASE_API': "http://localhost:8089"
+    }
   }
 })

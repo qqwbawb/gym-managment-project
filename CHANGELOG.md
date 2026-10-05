@@ -111,10 +111,31 @@
 - 后端 Mapper 映射文件统一整理到 `resources/mapper/` 目录
 - 修复用户分页参数 `nickNme` → `nickName` 拼写错误
 
+## [0.7.0] - 2026-10-05
+
+### 新增（feat）
+
+#### 课程管理模块
+- 后端新增 `course` 模块：`Course` / `CourseList` 实体、Mapper + 映射文件、Service、`CourseController`
+- 完成课程接口开发：新增、编辑、删除、分页列表（按课程名 / 教练名模糊查询）
+- 新增教练下拉接口 `/api/user/getTeacher`（筛选用户类型为教练的员工），用于添加课程时选择教练
+- 前端新增 `api/course` 与 `composables/course`（useCourse / useTable / useEditor / useUpload / useSelectTeacher）
+- 新增课程列表 `CourseList.vue` 与课程添加 `AddCourse.vue`（wangEditor 富文本编辑课程详情）
+- 新增「我的课程」页面 `mycourse.vue`（页面框架）
+
+#### 图片上传（MinIO）
+- 后端整合 MinIO 对象存储（8.3.9）：`MinioConfig` / `MinioProp` / `MinioUtils`、上传接口 `/api/upload/uploadImage`
+- `WebMvcConfig` 增加静态资源映射，支持图片访问
+- 前端集成 wangEditor 富文本编辑器（课程详情编辑，支持图片上传）
+
+### 工程优化（improve）
+- 后端补充 minio / okhttp / easyexcel / fastjson 依赖
+- 前端 vite 配置新增 `BASE_API` 全局变量，axios 请求地址统一管理
+
 ## [未发布]
 
 ### 规划（planned）
 - 数据库初始化脚本（docs/sql/）
-- 业务模块开发：课程、器材、商品、失物招领、反馈
+- 业务模块开发：选课报名、器材、商品、失物招领、反馈
 - 登录认证（验证码 + JWT）、权限树分配、动态菜单、我的充值
 - 数据统计看板（ECharts）、Spring Security 认证授权

@@ -9,6 +9,16 @@ spring:
     url: jdbc:mysql://localhost:3306/gym_system?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8
     username: root
     password: root
+  servlet:
+    multipart:
+      max-file-size: 200MB  #设置单个文件的大小  因为springboot内置tomact的的文件传输默认为10MB
+      max-request-size: 500MB   #设置单次请求的文件总大小
+      enabled: true    #千万注意要设置该参数，否则不生效
+# minio配置
+minio:
+  endpoint: http://127.0.0.1:9000
+  accesskey: minioadmin
+  secretKey: minioadmin
 #mybaits-plus配置
 mybatis-plus:
   configuration:

@@ -102,7 +102,39 @@ const routes: Array<RouteRecordRaw> = [
         }
       }
     ]
-  }
+  },
+  {
+    path: "/courseRoot",
+    component: Layout,
+    name: "courseRoot",
+    meta: {
+      title: "课程管理",
+      icon: "Document",
+      roles: ["sys:courseRoot"],
+    },
+    children: [
+      {
+        path: "/courseList",
+        component: () => import('@/views/course/CourseList.vue'),
+        name: "courseList",
+        meta: {
+          title: "课程列表",
+          icon: "UserFilled",
+          roles: ["sys:courseList"],
+        },
+      },
+      {
+        path: "/mycourse",
+        component: () => import('@/views/mycourse/mycourse.vue'),
+        name: "mycourse",
+        meta: {
+          title: "我的课程",
+          icon: "Wallet",
+          roles: ["sys:mycourse"],
+        },
+      }
+    ]
+  },
 ]
 
 const router = createRouter({

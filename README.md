@@ -110,6 +110,20 @@ GymSystem
 - 办卡接口 `/api/member/joinApply`（选择启用中会员卡）、充值接口 `/api/member/recharge`
 - 前端办卡页面 `JoinApply.vue`、充值页面 `Recharge.vue`
 
+### 已完成：阶段四（部分）—— 课程管理与图片上传
+
+**课程管理**
+- 后端 `course` 模块：`Course` / `CourseList` 实体、Mapper + 映射文件、Service、Controller
+- 课程接口：新增、编辑、删除、分页列表（按课程名 / 教练名模糊查询）
+- 教练下拉接口 `/api/user/getTeacher`，添加课程时选择教练
+- 前端课程列表 `CourseList.vue`、课程添加 `AddCourse.vue`（wangEditor 富文本编辑课程详情）
+- 新增「我的课程」页面 `mycourse.vue`（页面框架）
+
+**图片上传（MinIO）**
+- 后端整合 MinIO 对象存储（8.3.9）：`MinioConfig` / `MinioProp` / `MinioUtils`、上传接口 `/api/upload/uploadImage`
+- `WebMvcConfig` 增加静态资源映射，支持图片访问
+- 前端集成 wangEditor 富文本编辑器，课程详情支持图片上传
+
 ### 开发路线图
 
 | 阶段 | 内容 | 状态 |
@@ -117,7 +131,7 @@ GymSystem
 | 阶段一 | 工程搭建与基础框架（后端多模块 + 前端布局） | 已完成 |
 | 阶段二 | 系统管理模块：角色、员工、菜单管理 | 已完成 |
 | 阶段三 | 会员业务：会员卡类型、会员信息、办卡、充值 | 已完成 |
-| 阶段四 | 课程管理：课程维护、图片上传、选课报名 | 待开发 |
+| 阶段四 | 课程管理：课程维护与图片上传（已完成）、选课报名与我的课程 | 开发中 |
 | 阶段五 | 业务扩展：器材、商品、订单、失物招领、反馈 | 待开发 |
 | 阶段六 | 登录认证（验证码 + JWT）、Spring Security 权限、首页数据看板 | 待开发 |
 
