@@ -135,6 +135,50 @@ const routes: Array<RouteRecordRaw> = [
       }
     ]
   },
+  {
+    path: "/materialRoot",
+    component: Layout,
+    name: "materialRoot",
+    meta: {
+      title: "器材管理",
+      icon: "Document",
+      roles: ["sys:materialRoot"],
+    },
+    children: [
+      {
+        path: "/materialList",
+        component: () => import('@/views/material/MaterialList.vue'),
+        name: "materialList",
+        meta: {
+          title: "器材列表",
+          icon: "UserFilled",
+          roles: ["sys:materialList"],
+        },
+      }
+    ]
+  },
+  {
+    path: "/goodsRoot",
+    component: Layout,
+    name: "goodsRoot",
+    meta: {
+      title: "商品管理",
+      icon: "Document",
+      roles: ["sys:goodsRoot"],
+    },
+    children: [
+      {
+        path: "/goodsList",
+        component: () => import('@/views/goods/GoodsList.vue'),
+        name: "goodsList",
+        meta: {
+          title: "商品列表",
+          icon: "UserFilled",
+          roles: ["sys:goodsList"],
+        },
+      },
+    ]
+  },
 ]
 
 const router = createRouter({

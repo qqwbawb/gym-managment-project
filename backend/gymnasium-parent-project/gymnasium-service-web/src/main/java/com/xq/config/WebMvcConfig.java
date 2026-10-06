@@ -28,7 +28,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     //解决图片不能回显的问题
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        
+
         registry.addResourceHandler("/gymnasium/**").addResourceLocations("http://localhost:9000/gymnasium/");
     }
 }

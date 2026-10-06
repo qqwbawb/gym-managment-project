@@ -190,12 +190,12 @@ const show = async (type: string, row?: CourseType) => {
       valueHtml.value = addModel.courseDetails;
       //封面图回显
       if (row?.image) {
-        let obj = {
-         name:'',
-         url:'',
-        };
-        obj.url = row.image;
-        fileList.value.push(obj);
+        fileList.value = [...fileList.value, {
+          name: 'image',
+          url: row.image,
+          status: 'success',
+          uid: Date.now(),
+        }];
       }
     })
   }
