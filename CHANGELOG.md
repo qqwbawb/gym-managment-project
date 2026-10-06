@@ -132,10 +132,42 @@
 - 后端补充 minio / okhttp / easyexcel / fastjson 依赖
 - 前端 vite 配置新增 `BASE_API` 全局变量，axios 请求地址统一管理
 
+## [0.8.0] - 2026-10-06
+
+### 新增（feat）
+
+#### 器材管理模块
+- 后端新增 `equipment` 模块：`Material` / `ListParam` 实体、Mapper + 映射文件、Service、`MaterialController`
+- 完成器材接口开发：新增、编辑、删除、分页列表（按名称模糊查询）
+- 前端新增 `api/material` 与 `composables/material`（useMaterial / useTable）
+- 新增器材列表 `MaterialList.vue`、器材添加 `AddMaterial.vue`
+
+#### 商品管理模块
+- 后端新增 `goods` 模块：`Goods` / `GoodsParam` 实体、Mapper + 映射文件、Service、`GoodsController`
+- 完成商品接口开发：新增、编辑、删除、分页列表（按名称模糊查询）
+- 前端新增 `api/goods` 与 `composables/goods`（useGoods / useTable）
+- 新增商品列表 `GoodsList.vue`、商品添加 `AddGoods.vue`
+
+#### 失物招领模块
+- 后端新增 `lost` 模块：`Lost` / `LostParam` 实体、Mapper + 映射文件、Service、`LostController`
+- 完成失物招领接口开发：新增、编辑、删除、分页列表（按失物名称模糊查询）
+- 前端新增 `api/lost` 与 `composables/lost`（useLost / useTable）
+- 新增失物列表 `LostList.vue`、失物添加 `AddLost.vue`、失物招领人页面 `LostPerson.vue`
+
+#### 建议反馈模块
+- 后端新增 `suggest` 模块：`Suggest` / `SuggestParam` 实体、Mapper + 映射文件、Service、`SuggestController`
+- 完成反馈接口开发：新增（自动记录反馈时间）、编辑、删除、分页列表（按标题模糊查询、按时间倒序）
+- 前端新增 `api/suggest` 与 `composables/suggest`（useSuggest / useTable）
+- 新增反馈列表 `SuggestList.vue`、反馈添加 `AddSuggest.vue`
+
+### 工程优化（improve）
+- 补充 wangEditor 类型声明（`types/wangeditor.d.ts`）
+- 新增器材管理、商品管理、失物招领、建议反馈路由与侧边菜单
+
 ## [未发布]
 
 ### 规划（planned）
 - 数据库初始化脚本（docs/sql/）
-- 业务模块开发：选课报名、器材、商品、失物招领、反馈
+- 业务模块开发：选课报名、订单
 - 登录认证（验证码 + JWT）、权限树分配、动态菜单、我的充值
 - 数据统计看板（ECharts）、Spring Security 认证授权

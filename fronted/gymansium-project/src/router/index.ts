@@ -179,6 +179,51 @@ const routes: Array<RouteRecordRaw> = [
       },
     ]
   },
+  {
+    path: "/lostRoot",
+    component: Layout,
+    name: "lostRoot",
+    meta: {
+      title: "失物招领",
+      icon: "Document",
+      roles: ["sys:lostRoot"],
+    },
+    children: [
+      {
+        path: "/lostList",
+        component: () => import('@/views/lost/LostList.vue'),
+        name: "lostList",
+        meta: {
+          title: "失物列表",
+          icon: "UserFilled",
+          roles: ["sys:lostList"],
+        },
+      }
+    ]
+  },
+  {
+    path: "/suggestRoot",
+    component: Layout,
+    name: "suggestRoot",
+    meta: {
+      title: "反馈管理",
+      icon: "Document",
+      roles: ["sys:suggestRoot"],
+    },
+    children: [
+      {
+        path: "/suggestList",
+        component: () =>
+          import('@/views/suggest/SuggestList.vue'),
+        name: "suggestList",
+        meta: {
+          title: "反馈列表",
+          icon: "UserFilled",
+          roles: ["sys:suggestList"],
+        },
+      }
+    ]
+  }
 ]
 
 const router = createRouter({

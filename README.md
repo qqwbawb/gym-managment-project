@@ -124,6 +124,28 @@ GymSystem
 - `WebMvcConfig` 增加静态资源映射，支持图片访问
 - 前端集成 wangEditor 富文本编辑器，课程详情支持图片上传
 
+### 已完成：阶段五（部分）—— 器材管理、商品管理
+
+**器材管理**
+- 后端 `equipment` 模块：`Material` / `ListParam` 实体、Mapper + 映射文件、Service、Controller
+- 器材接口：新增、编辑、删除、分页列表（按名称模糊查询）
+- 前端器材列表 `MaterialList.vue`、器材添加 `AddMaterial.vue`
+
+**商品管理**
+- 后端 `goods` 模块：`Goods` / `GoodsParam` 实体、Mapper + 映射文件、Service、Controller
+- 商品接口：新增、编辑、删除、分页列表（按名称模糊查询）
+- 前端商品列表 `GoodsList.vue`、商品添加 `AddGoods.vue`
+
+**失物招领**
+- 后端 `lost` 模块：`Lost` / `LostParam` 实体、Mapper + 映射文件、Service、Controller
+- 失物接口：新增、编辑、删除、分页列表（按失物名称模糊查询）
+- 前端失物列表 `LostList.vue`、失物添加 `AddLost.vue`、失物招领人页面 `LostPerson.vue`
+
+**建议反馈**
+- 后端 `suggest` 模块：`Suggest` / `SuggestParam` 实体、Mapper + 映射文件、Service、Controller
+- 反馈接口：新增（自动记录反馈时间）、编辑、删除、分页列表（按标题模糊查询、按时间倒序）
+- 前端反馈列表 `SuggestList.vue`、反馈添加 `AddSuggest.vue`
+
 ### 开发路线图
 
 | 阶段 | 内容 | 状态 |
@@ -132,7 +154,7 @@ GymSystem
 | 阶段二 | 系统管理模块：角色、员工、菜单管理 | 已完成 |
 | 阶段三 | 会员业务：会员卡类型、会员信息、办卡、充值 | 已完成 |
 | 阶段四 | 课程管理：课程维护与图片上传（已完成）、选课报名与我的课程 | 开发中 |
-| 阶段五 | 业务扩展：器材、商品、订单、失物招领、反馈 | 待开发 |
+| 阶段五 | 业务扩展：器材（已完成）、商品（已完成）、失物招领（已完成）、反馈（已完成）、订单 | 开发中 |
 | 阶段六 | 登录认证（验证码 + JWT）、Spring Security 权限、首页数据看板 | 待开发 |
 
 ## 环境要求
