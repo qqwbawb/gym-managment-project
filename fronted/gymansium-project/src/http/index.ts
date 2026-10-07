@@ -1,12 +1,14 @@
 import axios from "axios";
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { ElMessage } from 'element-plus';
+import { userStore } from '@/store/user';
 
 //axios请求配置
 const config = {
   //baseURL: 'http://localhost:8089', //真实请求接口的地址，真实上线是一个域名
   baseURL: process.env.BASE_API,
-  timeout: 10000
+  timeout: 10000,
+  withCredentials: true //解决sesson不一致
 }
 
 //定义返回值类型
@@ -30,7 +32,7 @@ class Http {
     //axios发送请求之前的处理
     this.instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
       //在请求头部携带token
-      let token = sessionStorage.getItem('token');
+      let token = userStore().token;
       if (token) {
         config.headers['token'] = token
       }

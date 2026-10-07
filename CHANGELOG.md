@@ -164,10 +164,27 @@
 - 补充 wangEditor 类型声明（`types/wangeditor.d.ts`）
 - 新增器材管理、商品管理、失物招领、建议反馈路由与侧边菜单
 
+## [0.9.0] - 2026-10-07
+
+### 新增（feat）
+
+#### 登录认证模块
+- 后端新增 `login` 模块：`LoginController`（验证码生成 `/api/login/image`、登录 `/api/login/login`，支持会员 / 员工双账号体系）、`LoginParam` / `LoginResult` 实体
+- 整合 kaptcha 图形验证码（`ImageConfig` 配置，验证码存入 Session，Base64 返回前端）
+- 新增 JWT 工具类 `JwtUtils`（java-jwt），登录成功后签发 Token；`application-dev.yml` 新增 JWT 配置（颁发者 / 密钥 / 过期时间）
+- 登录校验：MD5 密码比对，按用户类型区分会员（member）与员工（sys_user）账号
+- 会员新增接口补充密码 MD5 加密，为会员登录做准备
+- 前端新增登录页 `Login.vue`、`api/login`、`composables/login`（useImage 验证码获取）、Pinia 用户状态 `store/user`（登录信息持久化）
+- 新增 `/login` 路由与全局路由守卫（未登录自动跳转登录页）
+- 集成 pinia-plugin-persistedstate 状态持久化；axios 请求 Token 改从用户状态读取、开启 withCredentials 保持 Session
+
+### 工程优化（improve）
+- 统一返回结果字段 `message` → `msg`，与前端请求封装对齐
+
 ## [未发布]
 
 ### 规划（planned）
 - 数据库初始化脚本（docs/sql/）
-- 业务模块开发：选课报名、订单
-- 登录认证（验证码 + JWT）、权限树分配、动态菜单、我的充值
+- 业务模块开发：选课报名、订单、我的充值
+- 权限树分配、动态菜单
 - 数据统计看板（ECharts）、Spring Security 认证授权

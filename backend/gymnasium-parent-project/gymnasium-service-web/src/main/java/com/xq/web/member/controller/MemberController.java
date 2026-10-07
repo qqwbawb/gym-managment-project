@@ -16,6 +16,7 @@ import com.xq.web.member_role.entity.MemberRole;
 import com.xq.web.member_role.service.MemberRoleService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -39,6 +40,7 @@ public class MemberController {
         if(one!=null){
             return ResultUtils.error("会员卡号被占用");
         }
+        member.setPassword(DigestUtils.md5DigestAsHex(member.getPassword().getBytes()));
         memberService.addMember(member);
         return ResultUtils.success("会员信息新增成功");
     }

@@ -5,10 +5,14 @@ import router from '@/router/index'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+//导入pinia持久化插件
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 //引入Pinia构造函数
 import { createPinia } from 'pinia'
 // 实例化 Pinia
 const pinia = createPinia()
+// 注册持久化插件
+pinia.use(piniaPluginPersistedstate)
 //国际化
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import objCoppy from './utils/objCopy'

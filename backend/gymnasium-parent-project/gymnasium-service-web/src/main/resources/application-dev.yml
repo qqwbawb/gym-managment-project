@@ -27,7 +27,11 @@ mybatis-plus:
   global-config:
     db-config:
       update-strategy: not_empty #只更新非空和非null的
-
+#配置JWT
+jwt:
+  issuer: krisswen #颁发者
+  secret: com.xq #配置密钥
+  expiration: 30 #配置过期时间
 #定义日志输出格式
 logging:
   pattern:

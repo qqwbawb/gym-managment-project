@@ -11,7 +11,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class ResultVo<T>{
 
-    private String message;
+    private String msg;
     private int code;
     private T data;
 }
