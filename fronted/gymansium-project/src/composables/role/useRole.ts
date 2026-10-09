@@ -7,8 +7,10 @@ import useInstance from '@/hooks/useInstance'
 
 export default function useRole(getList: FuncList) {
     const { global } = useInstance()
+    //分配权限弹框属性
+    const assignRoleRef = ref<{ show: (roleId: string, name: string) => void }>()
     //获取子组件暴露的弹框属性
-    const addRef = ref<{ show: (type: String, row?: AddRoleModel) => void }>();
+    const addRef = ref<{ show: (type: String, row?: AddRoleModel) => void }>()
 
     //新增
     const addBtn = () => {
@@ -31,11 +33,18 @@ export default function useRole(getList: FuncList) {
         }
     }
 
+    //分配权限按钮
+    const assignBtn = (row: AddRoleModel) => {
+        assignRoleRef.value?.show(row.roleId, row.roleName)
+    }
+
     return {
         addBtn,
         editBtn,
         deleteBtn,
-        addRef
+        addRef,
+        assignBtn,
+        assignRoleRef
     }
 
 }

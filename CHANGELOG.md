@@ -181,10 +181,23 @@
 ### 工程优化（improve）
 - 统一返回结果字段 `message` → `msg`，与前端请求封装对齐
 
+## [0.10.0] - 2026-10-09
+
+### 新增（feat）
+
+#### 角色权限分配模块（权限树）
+- 后端新增 `sys_role_menu`（角色-菜单中间表）模块：`RoleMenu` / `SaveMenuParam` 实体、Mapper + 映射文件、Service
+- 新增权限分配接口：`/api/role/getMenuTree`（权限树回显：超级管理员查询全部菜单，普通用户查询本人可见菜单，并回显角色已分配菜单）、`/api/role/saveRoleMenu`（保存角色菜单分配）
+- `sys_menu` 模块补充按用户 / 按角色查询菜单树接口，`MakeMenuTree` 组装权限树数据
+- 前端新增 `composables/role/useAssign.ts` 与权限分配弹框 `AssignRole.vue`，角色列表 `RoleList.vue` 增加分配入口
+
+### 工程优化（improve）
+- 用户实体管理员标识字段统一为 `isAdmin`（修复原 `idAdmin` 拼写），用于权限树差异化查询
+
 ## [未发布]
 
 ### 规划（planned）
 - 数据库初始化脚本（docs/sql/）
 - 业务模块开发：选课报名、订单、我的充值
-- 权限树分配、动态菜单
+- 动态菜单
 - 数据统计看板（ECharts）、Spring Security 认证授权

@@ -43,7 +43,7 @@ public class SysUserController {
         if(StringUtils.isNotBlank(sysUser.getPassword())){
             sysUser.setPassword(DigestUtils.md5DigestAsHex(sysUser.getPassword().getBytes()));
         }
-        sysUser.setIdAdmin("0");
+        sysUser.setIsAdmin("0");
         sysUser.setCreateTime(new Date());
         //存到数据库中
         boolean save = sysUserService.save(sysUser);

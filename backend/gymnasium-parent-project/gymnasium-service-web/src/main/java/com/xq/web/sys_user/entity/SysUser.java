@@ -27,7 +27,7 @@ public class SysUser {
     private BigDecimal salary;
     private String userType;
     private String status;
-    private String idAdmin;
+    private String isAdmin;
     private boolean isAccountNonExpired=true;
     private boolean isAccountNonLocked=true;
     private boolean isCredentialsNonExpired=true;

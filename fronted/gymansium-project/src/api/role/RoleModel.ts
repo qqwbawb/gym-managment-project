@@ -14,3 +14,12 @@ export type ListParam = {
     total: number
 }
 
+export type AssignParam = {
+    roleId: string
+    userId: string
+}
+
+export type SaveAssignParam = {
+    roleId: string,
+    list: Array<string>
+}

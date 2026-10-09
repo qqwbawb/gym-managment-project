@@ -14,6 +14,21 @@ import java.util.List;
 @Service
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper,SysMenu> implements SysMenuService {
     @Override
+    public List<SysMenu> getMenuByUserId(Long userId) {
+        return this.baseMapper.getMenuByUserId(userId);
+    }
+
+    @Override
+    public List<SysMenu> getMenuByMemberId(Long memberId) {
+        return this.baseMapper.getMenuByMemberId(memberId);
+    }
+
+    @Override
+    public List<SysMenu> getMenuByRoleId(Long roleId) {
+        return this.baseMapper.getMenuByRoleId(roleId);
+    }
+
+    @Override
     public List<SysMenu> getParent() {
         //查询目录和菜单
         String[] type={"0","1"};
