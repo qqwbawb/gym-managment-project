@@ -5,18 +5,22 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.xq.jwt.JwtUtils;
 import com.xq.utils.ResultUtils;
 import com.xq.utils.ResultVo;
+import com.xq.web.login.entity.InfoParam;
 import com.xq.web.login.entity.LoginParam;
 import com.xq.web.login.entity.LoginResult;
+import com.xq.web.login.entity.UserInfo;
 import com.xq.web.member.entity.Member;
 import com.xq.web.member.service.MemberService;
+import com.xq.web.sys_menu.entity.MakeMenuTree;
+import com.xq.web.sys_menu.entity.RouterVo;
+import com.xq.web.sys_menu.entity.SysMenu;
+import com.xq.web.sys_menu.service.SysMenuService;
 import com.xq.web.sys_user.entity.SysUser;
 import com.xq.web.sys_user.service.SysUserService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
@@ -25,8 +29,8 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/login")
@@ -52,8 +56,7 @@ public class LoginController {
             BASE64Encoder encoder = new BASE64Encoder();
             String base64 = encoder.encode(os.toByteArray());
             String captcha = "data:image/jpeg;base64," + base64.replaceAll("\r\n", "");
-            ResultVo result=new ResultVo<>("生成成功",200,captcha);
-            return result;
+            return new ResultVo<>("生成成功",200,captcha);
         }catch(IOException e){
             e.printStackTrace();
         }finally {
@@ -124,6 +127,86 @@ public class LoginController {
             result.setUserName(one.getUsername());
             return ResultUtils.success("登录成功",result);
         }else{
+            return ResultUtils.error("用户类型错误");
+        }
+    }
+
+    @Autowired
+    private SysMenuService sysMenuService;
+
+    //查询用户信息
+    @GetMapping("/getInfo")
+    public ResultVo getInfo(InfoParam infoParam){
+        UserInfo userInfo = new UserInfo();
+        if(infoParam.getUserType().equals("1")){//会员
+            //根据会员id查询对应的权限字段
+            List<SysMenu> menuList = sysMenuService.getMenuByMemberId(infoParam.getUserId());
+            //获取menu中的code字段
+            List<String> collect = Optional.ofNullable(menuList).orElse(new ArrayList<>())
+                    .stream()
+                    .map(item -> item.getCode())
+                    .filter(item -> item != null)
+                    .collect(Collectors.toList());
+            //转换为数组
+            String[] strings=collect.toArray(new String[collect.size()]);
+            //查询会员信息
+            Member member =memberService.getById(infoParam.getUserId());
+            //设置返回信息
+            userInfo.setUserId(member.getMemberId());
+            userInfo.setName(member.getName());
+            userInfo.setPermissions(strings);
+            return ResultUtils.success("查询成功",userInfo);
+        }else if(infoParam.getUserType().equals("2")){//员工
+            SysUser sysUser = sysUserService.getById(infoParam.getUserId());
+            List<SysMenu> menuList = null;
+            if(StringUtils.isNotEmpty(sysUser.getIsAdmin())&&sysUser.getIsAdmin().equals("1")){//管理员
+                menuList = sysMenuService.list();
+            }else{
+                menuList = sysMenuService.getMenuByUserId(sysUser.getUserId());
+            }
+            List<String> collect = Optional.ofNullable(menuList).orElse(new ArrayList<>())
+                    .stream()
+                    .map(item -> item.getCode())
+                    .filter(item -> item != null)
+                    .collect(Collectors.toList());
+            String[] strings=collect.toArray(new String[collect.size()]);
+            //设置返回信息
+            userInfo.setUserId(sysUser.getUserId());
+            userInfo.setName(sysUser.getNickName());
+            userInfo.setPermissions(strings);
+            return ResultUtils.success("查询成功",userInfo);
+        }else{
+            return ResultUtils.error("用户类型错误");
+        }
+    }
+
+    @GetMapping("/getMenuList")
+    public ResultVo getMenuList(InfoParam infoParam){
+        if(infoParam.getUserType().equals("1")){//会员
+            List<SysMenu> menuList = sysMenuService.getMenuByMemberId(infoParam.getUserId());
+            //获取菜单信息
+            List<SysMenu> collect = Optional.ofNullable(menuList).orElse(new ArrayList<>())
+                    .stream()
+                    .filter(item -> item != null && !item.getType().equals("2"))
+                    .collect(Collectors.toList());
+            List<RouterVo> routerVos = MakeMenuTree.makeRouter(collect, 0L);
+            return ResultUtils.success("查询成功",routerVos);
+        }else if(infoParam.getUserType().equals("2")){//员工
+            SysUser sysUser=sysUserService.getById(infoParam.getUserId());
+            List<SysMenu> menuList = null;
+            if(StringUtils.isNotEmpty(sysUser.getIsAdmin())&&sysUser.getIsAdmin().equals("1")){
+                menuList = sysMenuService.list();
+            }else{
+                menuList = sysMenuService.getMenuByUserId(sysUser.getUserId());
+            }
+            //获取菜单信息
+            List<SysMenu> collect = Optional.ofNullable(menuList).orElse(new ArrayList<>())
+                    .stream()
+                    .filter(item -> item != null && !item.getType().equals("2"))
+                    .collect(Collectors.toList());
+            List<RouterVo> routerVos = MakeMenuTree.makeRouter(collect, 0L);
+            return ResultUtils.success("查询成功",routerVos);
+        }else {
             return ResultUtils.error("用户类型错误");
         }
     }

@@ -2,7 +2,29 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import Layout from '@/layout/Index.vue'
 import { userStore } from '@/store/user'
-
+export const constantRoutes: Array<RouteRecordRaw> = [
+  {
+    path: "/login",
+    component: () => import('@/views/login/Login.vue'),
+    name: "login"
+  },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/dashboard',
+    children: [
+      {
+        path: '/dashboard',
+        component: () => import('@/layout/dashboard/Index.vue'),
+        name: 'dashboard',
+        meta: {
+          title: '首页',
+          icon: 'HomeFilled'
+        }
+      }
+    ]
+  },
+]
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/login",
@@ -234,22 +256,7 @@ const routes: Array<RouteRecordRaw> = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
-})
-
-// 路由守卫：未登录跳转登录页
-router.beforeEach((to, from, next) => {
-  // 访问登录页直接放行
-  if (to.path === '/login') {
-    next()
-    return
-  }
-  // 没有 token（未登录）→ 去登录页
-  if (!userStore().token) {
-    next('/login')
-    return
-  }
-  next()
+  routes: constantRoutes
 })
 
 export default router

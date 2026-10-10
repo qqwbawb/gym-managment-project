@@ -24,8 +24,8 @@
           <el-col :span="12" :offset="0">
             <el-form-item prop="sex" label="性别">
               <el-radio-group v-model="addModel.sex">
-                <el-radio :label="'0'">男</el-radio>
-                <el-radio :label="'1'">女</el-radio>
+                <el-radio :value="'0'">男</el-radio>
+                <el-radio :value="'1'">女</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -108,8 +108,8 @@
           <el-col :span="12" :offset="0">
             <el-form-item prop="status" label="状态">
               <el-radio-group v-model="addModel.status">
-                <el-radio :label="'0'">停用</el-radio>
-                <el-radio :label="'1'">启用</el-radio>
+                <el-radio :value="'0'">停用</el-radio>
+                <el-radio :value="'1'">启用</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>

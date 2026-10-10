@@ -1,5 +1,5 @@
 import http from "@/http"
-import type { LoginParam } from "./LoginModel"
+import type { InfoParam, LoginParam } from "./LoginModel"
 
 //获取验证码
 export const getImageApi = () => {
@@ -9,4 +9,14 @@ export const getImageApi = () => {
 //登录
 export const loginApi = (param: LoginParam) => {
     return http.post("/api/login/login", param)
+}
+
+//动态获取菜单数据
+export const getMenuListApi = (param: InfoParam) => {
+    return http.get("/api/login/getMenuList", param)
+}
+
+//查询用户信息
+export const getInfoApi = (param: InfoParam) => {
+    return http.get("/api/login/getInfo", param)
 }

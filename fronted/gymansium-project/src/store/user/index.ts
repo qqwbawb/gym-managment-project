@@ -1,3 +1,4 @@
+import { getInfoApi } from "@/api/login";
 import { defineStore } from "pinia";
 
 //定义store
@@ -5,7 +6,9 @@ export const userStore = defineStore('userStore', {
     state: () => {
         return {
             userId: '',
-            token: ''
+            token: '',
+            userType: '',
+            codeList: []
         }
     },
     getters: {
@@ -14,6 +17,9 @@ export const userStore = defineStore('userStore', {
         },
         getToken(state) {
             return state.token
+        },
+        getUserType(state) {
+            return state.userType
         }
     },
     actions: {
@@ -22,11 +28,22 @@ export const userStore = defineStore('userStore', {
         },
         setToken(token: string) {
             this.token = token
+        },
+        setUserType(userType: string) {
+            this.userType = userType
+        },
+        getInfo() {
+            return new Promise((resolve, reject) => {
+                getInfoApi({ userType: this.userType, userId: this.userId }).then((res) => {
+                    if (res && res.code == 200) {
+                        this.codeList = res.data.permissions
+                    }
+                    resolve(this.codeList)
+                }).catch((error) => {
+                    reject(error)
+                })
+            })
         }
     },
-    persist: {
-        key: 'userStore',
-        storage: localStorage,
-        paths: ['userId', 'token']
-    }
+    persist: true
 })

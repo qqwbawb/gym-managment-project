@@ -40,8 +40,8 @@
       </el-form-item>
       <el-form-item label="用户类型">
         <el-radio-group v-model="loginModel.userType">
-          <el-radio :label="1">会员</el-radio>
-          <el-radio :label="2">员工</el-radio>
+          <el-radio value="1">会员</el-radio>
+          <el-radio value="2">员工</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item>
@@ -84,7 +84,7 @@ const loginModel = reactive({
   username: "",
   password: "",
   code: "",
-  userType: "",
+  userType: "2",
 });
 //表单验证规则
 const rules = reactive({});
@@ -94,6 +94,7 @@ const onSubmit = async () => {
   if (res && res.code == 200) {
     store.setToken(res.data.token)
     store.setUserId(res.data.userId)
+    store.setUserType(loginModel.userType)
     //跳转到首页
     router.push({ path: "/" });
   }

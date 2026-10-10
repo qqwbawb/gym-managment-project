@@ -47,7 +47,7 @@ public class MakeMenuTree {
                             router.setRedirect(item.getPath());
                             List<RouterVo> listChild=new ArrayList<>();
                             RouterVo child=new RouterVo();
-                            child.setName(item.getName());
+                            child.setName(item.getName() + "Child");
                             child.setPath(item.getPath());
                             child.setComponent(item.getUrl());
                             child.setMeta(child.new Meta(

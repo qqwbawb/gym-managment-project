@@ -17,9 +17,9 @@
         >
           <el-form-item prop="type" label="菜单类型">
             <el-radio-group v-model="addModel.type">
-              <el-radio :label="'0'">目录</el-radio>
-              <el-radio :label="'1'">菜单</el-radio>
-              <el-radio :label="'2'">按钮</el-radio>
+              <el-radio :value="'0'">目录</el-radio>
+              <el-radio :value="'1'">菜单</el-radio>
+              <el-radio :value="'2'">按钮</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-row>

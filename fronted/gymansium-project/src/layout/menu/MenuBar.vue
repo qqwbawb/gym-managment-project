@@ -18,226 +18,233 @@ import MenuItem from "@/layout/menu/MenuItem.vue";
 import MenuLogo from "@/layout/menu/MenuLogo.vue";
 import { useRoute } from "vue-router";
 import { collapseStore } from "@/store/collapse/index";
-
+import { menuStore } from '@/store/menu'
 const colstore = collapseStore();
+const mstore=menuStore()
+//collapse
 const isCollapse = computed(() => {
   return colstore.getCollapse;
 });
+//获取当前路由
 const route = useRoute();
 //获取激活的菜单
 const activeIndex = computed(() => {
   const { path } = route;
   return path;
 });
+//动态获取菜单数据
+const menuList =computed(()=>{
+  return mstore.getMenuList
+})
 //树形的菜单数据
 //reactive:定义响应式的数据（复杂类型，对象）
 //ref:定义响应式的数据 （基本类型） let count = ref(0)
-let menuList = reactive([
-  {
-    path: "/system",
-    component: "Layout",
-    name: "system",
-    meta: {
-      title: "系统管理",
-      icon: "Setting",
-      roles: ["sys:manage"],
-    },
-    children: [
-      {
-        path: "/userList",
-        component: "/system/User/UserList",
-        name: "userList",
-        meta: {
-          title: "员工管理",
-          icon: "UserFilled",
-          roles: ["sys:user"],
-        },
-      },
-      {
-        path: "/roleList",
-        component: "/system/Role/RoleList",
-        name: "roleList",
-        meta: {
-          title: "角色管理",
-          icon: "User",
-          roles: ["sys:role"],
-        },
-      },
-      {
-        path: "/menuList",
-        component: "/system/Menu/MenuList",
-        name: "menuList",
-        meta: {
-          title: "菜单管理",
-          icon: "Menu",
-          roles: ["sys:menu"],
-        },
-      },
-    ],
-  },
-  {
-    path: "/memberRoot",
-    component: "Layout",
-    name: "memberRoot",
-    meta: {
-      title: "会员管理",
-      icon: "UserFilled",
-      roles: ["sys:memberRoot"],
-    },
-    children: [
-      {
-        path: "/cardType",
-        component: "/member/CardType",
-        name: "cardType",
-        meta: {
-          title: "会员卡类型",
-          icon: "Postcard",
-          roles: ["sys:cardType"],
-        },
-      },
-      {
-        path: "/memberList",
-        component: "/member/MemberList",
-        name: "memberList",
-        meta: {
-          title: "会员管理",
-          icon: "Wallet",
-          roles: ["sys:memberList"],
-        },
-      },
-      {
-        path: "/myFee",
-        component: "/system/MyFee",
-        name: "myFee",
-        meta: {
-          title: "我的充值",
-          icon: "CreditCard",
-          roles: ["sys:myFee"],
-        },
-      },
-    ],
-  },
-  {
-     path: "/courseRoot",
-     component: "Layout",
-     name: "courseRoot",
-   meta: {
-       title: "课程管理",
-       icon: "ScaleToOriginal",
-       roles: ["sys:courseRoot"],
-     },
-     children: [
-       {
-         path: "/courseList",
-         component: "/course/CourseList",
-         name: "courseList",
-         meta: {
-           title: "课程列表",
-           icon: "UserFilled",
-           roles: ["sys:courseList"],
-         },
-       },
-       {
-         path: "/mycourse",
-         component: "/mycourse/mycourse",
-        name: "mycourse",
-        meta: {
-          title: "我的课程",
-          icon: "Wallet",
-          roles: ["sys:mycourse"],
-         },
-     }
-    ],
-  },
-  {
-     path: "/materialRoot",
-     component: "Layout",
-     name: "materialRoot",
-     meta: {
-       title: "器材管理",
-       icon: "KnifeFork",
-       roles: ["sys:materialRoot"],
-     },
-     children: [
-       {
-         path: "/materialList",
-         component: "/material/MaterialList",
-         name: "materialList",
-        meta: {
-           title: "器材列表",
-           icon: "UserFilled",
-          roles: ["sys:materialList"],
-         },
-       }
-     ],
-  },
-  {
-     path: "/goodsRoot",
-     component: "Layout",
-     name: "goodsRoot",
-     meta: {
-       title: "商品管理",
-       icon: "Calendar",
-       roles: ["sys:goodsRoot"],
-     },
-     children: [
-       {
-         path: "/goodsList",
-         component: "/goods/GoodsList",
-         name: "goodsList",
-         meta: {
-           title: "商品列表",
-           icon: "UserFilled",
-           roles: ["sys:goodsList"],
-         },
-       },
-     ],
-   },
-   {
-     path: "/lostRoot",
-     component: "Layout",
-     name: "lostRoot",
-     meta: {
-       title: "失物招领",
-       icon: "Document",
-       roles: ["sys:lostRoot"],
-     },
-     children: [
-       {
-         path: "/lostList",
-         component: "/goods/LostList",
-         name: "lostList",
-        meta: {
-           title: "失物列表",
-           icon: "UserFilled",
-           roles: ["sys:lostList"],
-         },
-       }
-     ],
-   },
-   {
-    path: "/suggestRoot",
-     component: "Layout",
-     name: "suggestRoot",
-     meta: {
-       title: "反馈管理",
-       icon: "Document",
-       roles: ["sys:suggestRoot"],
-     },
-     children: [
-       {
-         path: "/suggestList",
-         component: "/suggest/SuggestList",
-         name: "suggestList",
-         meta: {
-           title: "反馈列表",
-           icon: "UserFilled",
-           roles: ["sys:suggestList"],
-         },
-       }
-    ],
-}
-]);
+// let menuList = reactive([
+//   {
+//     path: "/system",
+//     component: "Layout",
+//     name: "system",
+//     meta: {
+//       title: "系统管理",
+//       icon: "Setting",
+//       roles: ["sys:manage"],
+//     },
+//     children: [
+//       {
+//         path: "/userList",
+//         component: "/system/User/UserList",
+//         name: "userList",
+//         meta: {
+//           title: "员工管理",
+//           icon: "UserFilled",
+//           roles: ["sys:user"],
+//         },
+//       },
+//       {
+//         path: "/roleList",
+//         component: "/system/Role/RoleList",
+//         name: "roleList",
+//         meta: {
+//           title: "角色管理",
+//           icon: "User",
+//           roles: ["sys:role"],
+//         },
+//       },
+//       {
+//         path: "/menuList",
+//         component: "/system/Menu/MenuList",
+//         name: "menuList",
+//         meta: {
+//           title: "菜单管理",
+//           icon: "Menu",
+//           roles: ["sys:menu"],
+//         },
+//       },
+//     ],
+//   },
+//   {
+//     path: "/memberRoot",
+//     component: "Layout",
+//     name: "memberRoot",
+//     meta: {
+//       title: "会员管理",
+//       icon: "UserFilled",
+//       roles: ["sys:memberRoot"],
+//     },
+//     children: [
+//       {
+//         path: "/cardType",
+//         component: "/member/CardType",
+//         name: "cardType",
+//         meta: {
+//           title: "会员卡类型",
+//           icon: "Postcard",
+//           roles: ["sys:cardType"],
+//         },
+//       },
+//       {
+//         path: "/memberList",
+//         component: "/member/MemberList",
+//         name: "memberList",
+//         meta: {
+//           title: "会员管理",
+//           icon: "Wallet",
+//           roles: ["sys:memberList"],
+//         },
+//       },
+//       {
+//         path: "/myFee",
+//         component: "/system/MyFee",
+//         name: "myFee",
+//         meta: {
+//           title: "我的充值",
+//           icon: "CreditCard",
+//           roles: ["sys:myFee"],
+//         },
+//       },
+//     ],
+//   },
+//   {
+//      path: "/courseRoot",
+//      component: "Layout",
+//      name: "courseRoot",
+//    meta: {
+//        title: "课程管理",
+//        icon: "ScaleToOriginal",
+//        roles: ["sys:courseRoot"],
+//      },
+//      children: [
+//        {
+//          path: "/courseList",
+//          component: "/course/CourseList",
+//          name: "courseList",
+//          meta: {
+//            title: "课程列表",
+//            icon: "UserFilled",
+//            roles: ["sys:courseList"],
+//          },
+//        },
+//        {
+//          path: "/mycourse",
+//          component: "/mycourse/mycourse",
+//         name: "mycourse",
+//         meta: {
+//           title: "我的课程",
+//           icon: "Wallet",
+//           roles: ["sys:mycourse"],
+//          },
+//      }
+//     ],
+//   },
+//   {
+//      path: "/materialRoot",
+//      component: "Layout",
+//      name: "materialRoot",
+//      meta: {
+//        title: "器材管理",
+//        icon: "KnifeFork",
+//        roles: ["sys:materialRoot"],
+//      },
+//      children: [
+//        {
+//          path: "/materialList",
+//          component: "/material/MaterialList",
+//          name: "materialList",
+//         meta: {
+//            title: "器材列表",
+//            icon: "UserFilled",
+//           roles: ["sys:materialList"],
+//          },
+//        }
+//      ],
+//   },
+//   {
+//      path: "/goodsRoot",
+//      component: "Layout",
+//      name: "goodsRoot",
+//      meta: {
+//        title: "商品管理",
+//        icon: "Calendar",
+//        roles: ["sys:goodsRoot"],
+//      },
+//      children: [
+//        {
+//          path: "/goodsList",
+//          component: "/goods/GoodsList",
+//          name: "goodsList",
+//          meta: {
+//            title: "商品列表",
+//            icon: "UserFilled",
+//            roles: ["sys:goodsList"],
+//          },
+//        },
+//      ],
+//    },
+//    {
+//      path: "/lostRoot",
+//      component: "Layout",
+//      name: "lostRoot",
+//      meta: {
+//        title: "失物招领",
+//        icon: "Document",
+//        roles: ["sys:lostRoot"],
+//      },
+//      children: [
+//        {
+//          path: "/lostList",
+//          component: "/goods/LostList",
+//          name: "lostList",
+//         meta: {
+//            title: "失物列表",
+//            icon: "UserFilled",
+//            roles: ["sys:lostList"],
+//          },
+//        }
+//      ],
+//    },
+//    {
+//     path: "/suggestRoot",
+//      component: "Layout",
+//      name: "suggestRoot",
+//      meta: {
+//        title: "反馈管理",
+//        icon: "Document",
+//        roles: ["sys:suggestRoot"],
+//      },
+//      children: [
+//        {
+//          path: "/suggestList",
+//          component: "/suggest/SuggestList",
+//          name: "suggestList",
+//          meta: {
+//            title: "反馈列表",
+//            icon: "UserFilled",
+//            roles: ["sys:suggestList"],
+//          },
+//        }
+//     ],
+// }
+// ]);
 </script>
 
 <style scoped lang="scss">

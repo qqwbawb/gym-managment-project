@@ -19,10 +19,10 @@
           <el-col :span="24" :offset="0">
             <el-form-item prop="cardType" label="类型">
               <el-radio-group v-model="addModel.cardType">
-                <el-radio :label="'1'">天卡</el-radio>
-                <el-radio :label="'2'">周卡</el-radio>
-                <el-radio :label="'3'">月卡</el-radio>
-                <el-radio :label="'4'">年卡</el-radio>
+                <el-radio :value="'1'">天卡</el-radio>
+                <el-radio :value="'2'">周卡</el-radio>
+                <el-radio :value="'3'">月卡</el-radio>
+                <el-radio :value="'4'">年卡</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -48,8 +48,8 @@
           <el-col :span="12" :offset="0">
             <el-form-item prop="status" label="状态">
               <el-radio-group v-model="addModel.status">
-                <el-radio :label="'0'">停用</el-radio>
-                <el-radio :label="'1'">启用</el-radio>
+                <el-radio :value="'0'">停用</el-radio>
+                <el-radio :value="'1'">启用</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>

@@ -27,10 +27,5 @@ export const tabStore = defineStore('tabStore', {
       this.tabList.push(tab);
     }
   },
-  persist: {
-    enabled: true,
-    strategies: [
-      { storage: localStorage, path: ['tableList'] }
-    ]
-  }
+  persist: true
 })
