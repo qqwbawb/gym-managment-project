@@ -16,7 +16,6 @@
         <el-button :icon="Close" @click="resetBtn">重置</el-button>
         <el-button
           :icon="Plus"
-          v-permission="['sys:courseList:add']"
           type="primary"
           @click="addBtn"
           >新增</el-button
@@ -24,8 +23,8 @@
       </el-form-item>
     </el-form>
     <!-- 表格 -->
-    <el-table :height="tableHeight" :data="tableDate.list" borderstripe>
-      <el-table-column prop="image" width="90" label="课程封面"align="center">
+    <el-table :height="tableHeight" :data="tableData.list" borderstripe>
+      <el-table-column prop="image" width="90" label="课程封面" align="center">
         <template #default="scope">
           <el-image
             style="width: 60px; height: 60px; border-radius: 50%"
@@ -40,22 +39,24 @@
       <el-table-column label="操作" align="center" width="290">
         <template #default="scope">
           <el-button
-            v-permission="['sys:courseList:edit']"
             type="primary"
             :icon="Edit"
             size="default"
             @click="editBtn(scope.row)"
-            >编辑</el-button
-          >
-
+            >编辑</el-button>
           <el-button
-            v-permission="['sys:courseList:delete']"
+            @click="joinBtn(scope.row)"
+            type="success"
+            :icon="Edit"
+            size="default"
+            >报名</el-button
+          >
+          <el-button
             type="danger"
             :icon="Delete"
             size="default"
             @click="deleteBtn(scope.row)"
-            >删除</el-button
-          >
+            >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -78,21 +79,11 @@
 <script setup lang="ts">
 import AddCourse from "./AddCourse.vue";
 import { Plus, Edit, Delete, Search, Close } from "@element-plus/icons-vue";
-import useTable from "@/composables/course/useTable";
-import useCourse from "@/composables/course/useCourse";
+import useTable from "../../composables/course/useTable";
+import useCourse from "../../composables/course/useCourse";
 //列表
-const {
-  listParam,
-  tableDate,
-  getList,
-  sizeChange,
-  currentChange,
-  tableHeight,
-  searchBtn,
-  resetBtn,
-  reFresh,
-} = useTable();
+const {listParam,tableData,getList,sizeChange,currentChange,tableHeight,searchBtn,resetBtn,reFresh,} = useTable();
 //新增、编辑
-const { addBtn, editBtn, deleteBtn, addRef,joinBtn } =useCourse(getList);
+const { addBtn, editBtn, deleteBtn, addRef,joinBtn } = useCourse(getList);
 </script>
 <style scoped></style>

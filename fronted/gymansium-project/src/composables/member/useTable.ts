@@ -15,7 +15,9 @@ export default function useTable() {
         username: '',
         currentPage: 1,
         pageSize: 10,
-        total: 0
+        total: 0,
+        userId: '',
+        userType: ''
     })
 
     const getList = async () => {

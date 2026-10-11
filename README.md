@@ -93,7 +93,7 @@ GymSystem
 **前端公共能力**
 - Element Plus 中文国际化、`$objCoppy` / `$myconfirm` 全局工具、`useInstance` Hook、枚举定义
 
-### 已完成：阶段三 —— 会员卡类型、会员管理、办卡充值
+### 已完成：阶段三 —— 会员卡类型、会员管理、办卡充值、我的充值
 
 **会员卡类型管理**
 - 后端 `member_card` 模块：`MemberCard` / `ListCard` 实体、Mapper + 映射文件、Service、Controller
@@ -110,19 +110,28 @@ GymSystem
 - 办卡接口 `/api/member/joinApply`（选择启用中会员卡）、充值接口 `/api/member/recharge`
 - 前端办卡页面 `JoinApply.vue`、充值页面 `Recharge.vue`
 
-### 已完成：阶段四（部分）—— 课程管理与图片上传
+**我的充值**
+- 充值记录查询 `/api/member/getMyRecharge`：会员查自己的充值记录，员工查全部充值记录
+- 会员列表按用户类型区分：会员仅能查看本人信息，员工查看全部
+- 前端「我的充值」页面 `MyFee.vue`
+
+### 已完成：阶段四 —— 课程管理、选课报名、我的课程
 
 **课程管理**
 - 后端 `course` 模块：`Course` / `CourseList` 实体、Mapper + 映射文件、Service、Controller
 - 课程接口：新增、编辑、删除、分页列表（按课程名 / 教练名模糊查询）
 - 教练下拉接口 `/api/user/getTeacher`，添加课程时选择教练
 - 前端课程列表 `CourseList.vue`、课程添加 `AddCourse.vue`（wangEditor 富文本编辑课程详情）
-- 新增「我的课程」页面 `mycourse.vue`（页面框架）
 
 **图片上传（MinIO）**
 - 后端整合 MinIO 对象存储（8.3.9）：`MinioConfig` / `MinioProp` / `MinioUtils`、上传接口 `/api/upload/uploadImage`
 - `WebMvcConfig` 增加静态资源映射，支持图片访问
 - 前端集成 wangEditor 富文本编辑器，课程详情支持图片上传
+
+**选课报名与我的课程**
+- 后端 `member_course`（会员-课程中间表）模块：选课接口 `/api/course/joinCourse`（重复报名校验 + 余额判断 + 扣费）
+- 我的课程 `/api/course/getMyCourseList`：会员查已报课程，教练查本人授课课程
+- 前端「我的课程」页面 `mycourse.vue` 完成选课报名与课程列表
 
 ### 已完成：阶段五（部分）—— 器材管理、商品管理
 
@@ -172,8 +181,8 @@ GymSystem
 |------|------|------|
 | 阶段一 | 工程搭建与基础框架（后端多模块 + 前端布局） | 已完成 |
 | 阶段二 | 系统管理模块：角色、员工、菜单管理 | 已完成 |
-| 阶段三 | 会员业务：会员卡类型、会员信息、办卡、充值 | 已完成 |
-| 阶段四 | 课程管理：课程维护与图片上传（已完成）、选课报名与我的课程 | 开发中 |
+| 阶段三 | 会员业务：会员卡类型、会员信息、办卡、充值、我的充值 | 已完成 |
+| 阶段四 | 课程管理：课程维护与图片上传、选课报名与我的课程 | 已完成 |
 | 阶段五 | 业务扩展：器材（已完成）、商品（已完成）、失物招领（已完成）、反馈（已完成）、订单 | 开发中 |
 | 阶段六 | 登录认证（已完成）、权限树分配（已完成）、动态菜单（已完成）、Spring Security、首页看板 | 开发中 |
 

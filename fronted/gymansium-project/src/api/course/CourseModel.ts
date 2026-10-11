@@ -7,7 +7,8 @@ export type CourseType = {
     teacherName: string,
     courseHour: number,
     courseDetails: string,
-    coursePrice: number
+    coursePrice: number,
+    teacherId: string
 }
 //分页查询类型
 export type CourseListParam = {
@@ -16,4 +17,17 @@ export type CourseListParam = {
     pageSize: number,
     total: number,
     teacherName: string
+}
+//选课参数类型
+export type SelectCourse = {
+    courseId: string,
+    memberId: string
+}
+//选课查询参数类型
+export type MyCourseListParam = {
+    userType: string,
+    userId: string,
+    total: number,
+    currentPage: number,
+    pageSize: number
 }

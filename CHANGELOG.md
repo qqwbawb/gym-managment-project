@@ -209,9 +209,26 @@
 ### 工程优化（improve）
 - 路由守卫逻辑重构：动态菜单加载失败自动清理登录态
 
+## [0.12.0] - 2026-10-11
+
+### 新增（feat）
+
+#### 选课报名与我的课程
+- 后端新增 `member_course`（会员-课程中间表）模块：`MemberCourse` 实体、Mapper + 映射文件、Service
+- 新增选课接口 `/api/course/joinCourse`（重复报名校验 + 余额判断 + 扣费）、`/api/course/getMyCourseList`（我的课程：会员查已报课程，教练查本人授课课程）
+- 前端新增 `composables/mycourse`（useMyCourseTable），`mycourse.vue` 完成选课与我的课程页面
+
+#### 我的充值
+- 后端新增充值记录查询接口 `/api/member/getMyRecharge`（会员查自己的充值记录，员工查全部充值记录），`member_recharge` 模块补充按会员分页查询
+- 会员列表接口按用户类型区分：会员仅能查看本人信息，员工查看全部，并按加入时间倒序
+- 前端 `MyFee.vue` 完成我的充值页面，会员模块 API 补充
+
+### 工程优化（improve）
+- 修复角色 Mapper 映射文件命名（`mapper.SysRoleMapper.xml` → `SysRoleMapper.xml`）
+
 ## [未发布]
 
 ### 规划（planned）
 - 数据库初始化脚本（docs/sql/）
-- 业务模块开发：选课报名、订单、我的充值
+- 业务模块开发：订单
 - 数据统计看板（ECharts）、Spring Security 认证授权

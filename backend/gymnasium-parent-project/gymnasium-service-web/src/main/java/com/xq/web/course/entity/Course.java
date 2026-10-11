@@ -20,4 +20,5 @@ public class Course {
     private Integer courseHour;
     private String courseDetails;
     private BigDecimal coursePrice;
+    private Long teacherId;
 }

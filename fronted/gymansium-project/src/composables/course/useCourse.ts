@@ -1,11 +1,14 @@
-import { deleteApi } from "@/api/course"
+import { deleteApi, joinCourseApi } from "@/api/course"
 import type { CourseType } from "@/api/course/CourseModel"
 import useInstance from "@/hooks/useInstance"
+import { userStore } from "@/store/user"
 import { EditType } from "@/type/BaseEnum"
 import type { FuncList } from "@/type/BaseType"
 import { ElMessage } from "element-plus"
 import { ref } from "vue"
 export default function useCourse(getList: FuncList) {
+
+    const store = userStore()
 
     const { global } = useInstance()
     const addRef = ref<{ show: (type: string, row?: CourseType) => void }>()
@@ -30,9 +33,19 @@ export default function useCourse(getList: FuncList) {
         }
     }
     //选课
-    const joinBtn = async () => {
-
+    const joinBtn = async (row: CourseType) => {
+        let confirm = await global.$myconfirm("确定选择该课程吗？")
+        if (confirm) {
+            let res = await joinCourseApi({
+                courseId: row.courseId,
+                memberId: store.getUserId
+            })
+            if (res && res.code == 200) {
+                ElMessage.success(res.msg)
+            }
+        }
     }
+
     return {
         addBtn,
         editBtn,

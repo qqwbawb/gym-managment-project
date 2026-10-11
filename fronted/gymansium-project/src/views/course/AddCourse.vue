@@ -41,12 +41,13 @@
               class="m-2"
               placeholder="请选择教练"
               size="default"
+              @change="selectTeacher"
             >
               <el-option
                 v-for="item in teacherData.list"
                 :key="item.label"
                 :label="item.label"
-                :value="item.label"
+                :value="{value:item.value,label:item.label}"
               />
             </el-select>
           </el-form-item>
@@ -219,7 +220,7 @@ const addModel = reactive<CourseType>({
   courseName: "",
   image: "",
   teacherName: "",
-  //teacherId: "",
+  teacherId: "",
   courseHour: 0,
   courseDetails: "",
   coursePrice: 0,
@@ -308,5 +309,10 @@ const commit = () => {
     }
   });
 };
+//选择教练
+const selectTeacher=(val:any)=>{
+    addModel.teacherId=val.value
+    addModel.teacherName=val.label
+}
 </script>
 <style scoped></style>

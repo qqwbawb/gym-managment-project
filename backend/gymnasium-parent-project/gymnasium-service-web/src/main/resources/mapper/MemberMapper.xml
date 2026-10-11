@@ -5,4 +5,8 @@
     <update id="addMoney">
         update member set money= money + #{param.money} where member_id=#{param.memberId}
     </update>
+
+    <update id="subMoney">
+        update member set money=money-#{param.money} where member_id=#{param.memberId}
+    </update>
 </mapper>

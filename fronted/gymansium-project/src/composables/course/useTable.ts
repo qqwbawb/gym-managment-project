@@ -5,7 +5,7 @@ export default function useTable() {
     //表格高度
     const tableHeight = ref(0)
     //定义表格数据
-    const tableDate = reactive({
+    const tableData = reactive({
         list: []
     })
     //列表查询参数
@@ -21,7 +21,7 @@ export default function useTable() {
         let res = await listApi(listParam)
         if (res && res.code == 200) {
             console.log(res)
-            tableDate.list = res.data.records;
+            tableData.list = res.data.records;
             listParam.total = res.data.total;
         }
     }
@@ -59,7 +59,7 @@ export default function useTable() {
     })
     return {
         listParam,
-        tableDate,
+        tableData,
         getList,
         sizeChange,
         currentChange,

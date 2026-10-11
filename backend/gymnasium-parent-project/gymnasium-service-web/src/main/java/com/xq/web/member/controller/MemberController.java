@@ -5,13 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xq.utils.ResultUtils;
 import com.xq.utils.ResultVo;
-import com.xq.web.member.entity.JoinParam;
-import com.xq.web.member.entity.Member;
-import com.xq.web.member.entity.PageParam;
-import com.xq.web.member.entity.RechargeParam;
+import com.xq.web.member.entity.*;
 import com.xq.web.member.service.MemberService;
 import com.xq.web.member_card.entity.MemberCard;
 import com.xq.web.member_card.service.MemberCardService;
+import com.xq.web.member_recharge.entity.MemberRecharge;
+import com.xq.web.member_recharge.service.MemberRechargeService;
 import com.xq.web.member_role.entity.MemberRole;
 import com.xq.web.member_role.service.MemberRoleService;
 import org.apache.commons.lang.StringUtils;
@@ -65,20 +64,39 @@ public class MemberController {
 
     @GetMapping("/list")
     public ResultVo list(PageParam pageParam){
-        IPage<Member> page=new Page<>(pageParam.getCurrentPage(),pageParam.getPageSize());
-
-        QueryWrapper<Member> query = new QueryWrapper<>();
-        if(StringUtils.isNotEmpty(pageParam.getName())){
-            query.lambda().like(Member::getName,pageParam.getName());
+        if(pageParam.getUserType().equals("1")){
+            IPage<Member> page=new Page<>(pageParam.getCurrentPage(),pageParam.getPageSize());
+            QueryWrapper<Member> query = new QueryWrapper<>();
+            if(StringUtils.isNotEmpty(pageParam.getName())){
+                query.lambda().like(Member::getName,pageParam.getName());
+            }
+            if(StringUtils.isNotEmpty(pageParam.getPhone())){
+                query.lambda().like(Member::getPhone,pageParam.getPhone());
+            }
+            if(StringUtils.isNotEmpty(pageParam.getUsername())){
+                query.lambda().like(Member::getUsername,pageParam.getUsername());
+            }
+            query.lambda().eq(Member::getMemberId,pageParam.getUserId());
+            //排序
+            query.lambda().orderByDesc(Member::getJoinTime);
+            IPage<Member> list = memberService.page(page, query);
+            return ResultUtils.success("查询成功",list);
+        }else {
+            IPage<Member> page=new Page<>(pageParam.getCurrentPage(),pageParam.getPageSize());
+            QueryWrapper<Member> query = new QueryWrapper<>();
+            if(StringUtils.isNotEmpty(pageParam.getName())){
+                query.lambda().like(Member::getName,pageParam.getName());
+            }
+            if(StringUtils.isNotEmpty(pageParam.getPhone())){
+                query.lambda().like(Member::getPhone,pageParam.getPhone());
+            }
+            if(StringUtils.isNotEmpty(pageParam.getUsername())){
+                query.lambda().like(Member::getUsername,pageParam.getUsername());
+            }
+            query.lambda().orderByDesc(Member::getJoinTime);
+            IPage<Member> list = memberService.page(page, query);
+            return ResultUtils.success("查询成功",list);
         }
-        if(StringUtils.isNotEmpty(pageParam.getPhone())){
-            query.lambda().like(Member::getPhone,pageParam.getPhone());
-        }
-        if(StringUtils.isNotEmpty(pageParam.getUsername())){
-            query.lambda().like(Member::getUsername,pageParam.getUsername());
-        }
-        IPage<Member> list = memberService.page(page, query);
-        return ResultUtils.success("查询成功",list);
     }
 
     //根据会员id查询角色id
@@ -114,5 +132,23 @@ public class MemberController {
     public ResultVo recharge(@RequestBody RechargeParam rechargeParam){
         memberService.recharge(rechargeParam);
         return  ResultUtils.success("充值成功");
+    }
+
+    @Autowired
+    private MemberRechargeService memberRechargeService;
+
+    //充值查询
+    @GetMapping("/getMyRecharge")
+    public ResultVo getMyRecharge(RechargeParamList rechargeParamList){
+        //判断当前用户是会员还是员工
+        if(rechargeParamList.getUserType().equals("1")){
+            IPage<MemberRecharge> list = memberRechargeService.getRechargeByMemberId(rechargeParamList);
+            return ResultUtils.success("查询成功",list);
+        } else if (rechargeParamList.getUserType().equals("2")) {
+            IPage<MemberRecharge> list = memberRechargeService.getRechargeList(rechargeParamList);
+            return ResultUtils.success("查询成功",list);
+        }else {
+            return ResultUtils.error("用户类型错误");
+        }
     }
 }

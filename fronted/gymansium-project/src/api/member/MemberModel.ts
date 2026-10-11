@@ -24,7 +24,9 @@ export type MemberParam = {
     username: string,
     currentPage: number,
     pageSize: number,
-    total: number
+    total: number,
+    userId: string,
+    userType: string
 }
 //办卡数据类型
 export type ApplyCard = {
@@ -36,4 +38,12 @@ export type Recharge = {
     memberId: string
     money: number
     userId: string
+}
+//查询充值记录的数据模型
+export type MemberRecharge = {
+    currentPage: number,
+    pageSize: number,
+    total: number,
+    memberId: string,
+    userType: string
 }

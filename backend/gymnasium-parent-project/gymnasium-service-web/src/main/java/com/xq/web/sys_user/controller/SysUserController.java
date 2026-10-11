@@ -132,7 +132,7 @@ public class SysUserController {
             list.stream().forEach(item->{
                 SelectType selectType = new SelectType();
                 selectType.setLabel(item.getNickName());
-                selectType.setValue(item.getRoleId());
+                selectType.setValue(item.getUserId());
                 selectTypeList.add(selectType);
             });
         }

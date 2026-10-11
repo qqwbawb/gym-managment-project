@@ -1,6 +1,7 @@
 package com.xq.web.member_recharge.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -19,4 +20,9 @@ public class MemberRecharge {
     private BigDecimal money;
     private Date createTime;
     private String createUser;
+
+    @TableField(exist = false)
+    private String name;
+    @TableField(exist = false)
+    private String username;
 }
