@@ -133,7 +133,7 @@ GymSystem
 - 我的课程 `/api/course/getMyCourseList`：会员查已报课程，教练查本人授课课程
 - 前端「我的课程」页面 `mycourse.vue` 完成选课报名与课程列表
 
-### 已完成：阶段五（部分）—— 器材管理、商品管理
+### 已完成：阶段五 —— 器材、商品、失物招领、反馈、订单
 
 **器材管理**
 - 后端 `equipment` 模块：`Material` / `ListParam` 实体、Mapper + 映射文件、Service、Controller
@@ -154,6 +154,11 @@ GymSystem
 - 后端 `suggest` 模块：`Suggest` / `SuggestParam` 实体、Mapper + 映射文件、Service、Controller
 - 反馈接口：新增（自动记录反馈时间）、编辑、删除、分页列表（按标题模糊查询、按时间倒序）
 - 前端反馈列表 `SuggestList.vue`、反馈添加 `AddSuggest.vue`
+
+**商品订单**
+- 后端 `goods_order` 模块：`GoodsOrder` / `OrderItem` / `OrderParam` 实体、Mapper + 映射文件、Service、Controller
+- 下单接口 `/api/order/down`（购物车批量下单、自动计算总价、记录操作人）、订单列表 `/api/order/list`
+- 前端订单列表 `OrderList.vue`（含订单明细抽屉）、`api/order` / `composables/order`
 
 ### 已完成：阶段六（部分）—— 登录认证、权限分配、动态菜单
 
@@ -183,7 +188,7 @@ GymSystem
 | 阶段二 | 系统管理模块：角色、员工、菜单管理 | 已完成 |
 | 阶段三 | 会员业务：会员卡类型、会员信息、办卡、充值、我的充值 | 已完成 |
 | 阶段四 | 课程管理：课程维护与图片上传、选课报名与我的课程 | 已完成 |
-| 阶段五 | 业务扩展：器材（已完成）、商品（已完成）、失物招领（已完成）、反馈（已完成）、订单 | 开发中 |
+| 阶段五 | 业务扩展：器材、商品、失物招领、反馈、订单 | 已完成 |
 | 阶段六 | 登录认证（已完成）、权限树分配（已完成）、动态菜单（已完成）、Spring Security、首页看板 | 开发中 |
 
 ## 环境要求

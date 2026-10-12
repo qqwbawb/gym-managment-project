@@ -8,7 +8,8 @@ export type GoodsType = {
     unit: string,
     specs: string,
     price: number,
-    store: number
+    store: number,
+    num?: number
 }
 
 //商品查询数据类型
@@ -17,4 +18,9 @@ export type GoodsParam = {
     pageSize: number,
     total: number,
     name: string
+}
+
+//购物车
+export type AddCar = {
+    list: GoodsType[]
 }

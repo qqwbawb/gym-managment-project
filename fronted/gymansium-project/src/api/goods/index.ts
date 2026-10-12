@@ -16,3 +16,4 @@ export const editApi = (parm: GoodsType) => {
 export const deleteApi = (goodsId: string) => {
     return http.delete(`/api/goods/${goodsId}`)
 }
+

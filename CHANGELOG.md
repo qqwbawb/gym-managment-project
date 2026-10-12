@@ -226,9 +226,18 @@
 ### 工程优化（improve）
 - 修复角色 Mapper 映射文件命名（`mapper.SysRoleMapper.xml` → `SysRoleMapper.xml`）
 
+## [0.13.0] - 2026-10-12
+
+### 新增（feat）
+
+#### 商品订单模块
+- 后端新增 `goods_order` 模块：`GoodsOrder` / `OrderItem` / `OrderParam` 实体、Mapper + 映射文件、Service、`GoodsOrderController`
+- 完成下单接口 `/api/order/down`（购物车批量下单：自动计算总价、记录操作人）与订单列表 `/api/order/list`（分页 + 按商品名模糊查询）
+- 前端新增 `api/order` 与 `composables/order`（useOrderTable / useFaDrawer / useChildDrawer），订单列表 `OrderList.vue` 完成联调（含订单明细抽屉）
+- 商品类型补充购物车参数（`num` / `AddCar`）
+
 ## [未发布]
 
 ### 规划（planned）
 - 数据库初始化脚本（docs/sql/）
-- 业务模块开发：订单
 - 数据统计看板（ECharts）、Spring Security 认证授权
