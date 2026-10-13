@@ -19,6 +19,11 @@ import com.xq.web.sys_user.entity.SysUser;
 import com.xq.web.sys_user.service.SysUserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Encoder;
@@ -76,57 +81,125 @@ public class LoginController {
     @Autowired
     JwtUtils jwtUtils;
 
+    //登录
+//    @PostMapping("/login")
+//    public ResultVo login(HttpServletRequest request, @RequestBody LoginParam  loginParam){
+//        HttpSession session = request.getSession();
+//        String code=(String) session.getAttribute("code");
+//        //验证验证码
+//        if(code == null || !code.equalsIgnoreCase(loginParam.getCode())){
+//            return ResultUtils.error("验证码输入错误");
+//        }
+//        String password = DigestUtils.md5DigestAsHex(loginParam.getPassword().getBytes());
+//
+//        //判断用户类型
+//        if(loginParam.getUserType().equals("1")){//会员
+//            //构造查询条件
+//            QueryWrapper<Member> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.lambda().eq(Member::getUsername, loginParam.getUsername())
+//                    .eq(Member::getPassword,password);
+//            Member one = memberService.getOne(queryWrapper);
+//            if(one==null){
+//                return ResultUtils.error("用户名或密码输入错误");
+//            }
+//            //生成token
+//            Map<String,String> map = new HashMap<>();
+//            map.put("userId",Long.toString(one.getMemberId()));
+//            map.put("userName",one.getUsername());
+//            String token = jwtUtils.generateToken(map);
+//            //返回登录成功的信息
+//            LoginResult result = new LoginResult();
+//            result.setToken(token);
+//            result.setUserId(one.getMemberId());
+//            result.setUserName(one.getName());
+//            return ResultUtils.success("登录成功",result);
+//        }else if(loginParam.getUserType().equals("2")){//员工
+//            QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.lambda().eq(SysUser::getUsername, loginParam.getUsername())
+//                    .eq(SysUser::getPassword,password);
+//            SysUser one = sysUserService.getOne(queryWrapper);
+//            if(one==null){
+//                return ResultUtils.error("用户名或密码输入错误");
+//            }
+//            //生成token
+//            Map<String,String> map = new HashMap<>();
+//            map.put("userId",Long.toString(one.getUserId()));
+//            map.put("userName",one.getUsername());
+//            String token = jwtUtils.generateToken(map);
+//            //返回登录成功的信息
+//            LoginResult result = new LoginResult();
+//            result.setToken(token);
+//            result.setUserId(one.getUserId());
+//            result.setUserName(one.getUsername());
+//            return ResultUtils.success("登录成功",result);
+//        }else{
+//            return ResultUtils.error("用户类型错误");
+//        }
+//    }
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
     @PostMapping("/login")
     public ResultVo login(HttpServletRequest request, @RequestBody LoginParam  loginParam){
-        HttpSession session = request.getSession();
-        String code=(String) session.getAttribute("code");
-        //验证验证码
-        if(code == null || !code.equalsIgnoreCase(loginParam.getCode())){
-            return ResultUtils.error("验证码输入错误");
+        if(StringUtils.isEmpty(loginParam.getUsername())
+                || StringUtils.isEmpty(loginParam.getPassword())
+                || StringUtils.isEmpty(loginParam.getCode())
+                || StringUtils.isEmpty(loginParam.getUserType())){
+            return ResultUtils.error("用户名、密码、用户类型、验证码不能为空");
         }
-        String password = DigestUtils.md5DigestAsHex(loginParam.getPassword().getBytes());
-
-        //判断用户类型
+        //获取Session
+        HttpSession session = request.getSession();
+        //获取验证码
+        String code =session.getAttribute("code").toString();
+        if(StringUtils.isEmpty(code)){
+            return ResultUtils.error("验证码过期");
+        }
+        //验证验证码
+        if(!code.equals(loginParam.getCode())){
+            return ResultUtils.error("验证码错误");
+        }
+        String password = passwordEncoder.encode(loginParam.getPassword());
+        //构造SpringSecurity需要的token
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(loginParam.getUsername() + ":" + loginParam.getUserType(), loginParam.getPassword());
+        Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+        //将认证对象放到SpringSecurity上下文环境中
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
         if(loginParam.getUserType().equals("1")){//会员
-            //构造查询条件
-            QueryWrapper<Member> queryWrapper = new QueryWrapper<>();
-            queryWrapper.lambda().eq(Member::getUsername, loginParam.getUsername())
-                    .eq(Member::getPassword,password);
-            Member one = memberService.getOne(queryWrapper);
-            if(one==null){
-                return ResultUtils.error("用户名或密码输入错误");
-            }
+            Member member=(Member)authenticate.getPrincipal();
             //生成token
-            Map<String,String> map = new HashMap<>();
-            map.put("userId",Long.toString(one.getMemberId()));
-            map.put("userName",one.getUsername());
+            Map<String,String> map=new HashMap<>();
+            map.put("username",member.getUsername());
+            map.put("userId",Long.toString(member.getMemberId()));
+            map.put("userType",loginParam.getUserType());
             String token = jwtUtils.generateToken(map);
             //返回登录成功的信息
-            LoginResult result = new LoginResult();
-            result.setToken(token);
-            result.setUserId(one.getMemberId());
-            result.setUserName(one.getName());
-            return ResultUtils.success("登录成功",result);
+            LoginResult loginResult = new LoginResult();
+            loginResult.setToken(token);
+            loginResult.setUserId(member.getMemberId());
+            loginResult.setUserName(member.getName());
+            loginResult.setUserType(loginParam.getUserType());
+            return ResultUtils.success("登录成功",loginResult);
         }else if(loginParam.getUserType().equals("2")){//员工
-            QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
-            queryWrapper.lambda().eq(SysUser::getUsername, loginParam.getUsername())
-                    .eq(SysUser::getPassword,password);
-            SysUser one = sysUserService.getOne(queryWrapper);
-            if(one==null){
-                return ResultUtils.error("用户名或密码输入错误");
-            }
+            SysUser sysUser=(SysUser)authenticate.getPrincipal();
             //生成token
-            Map<String,String> map = new HashMap<>();
-            map.put("userId",Long.toString(one.getUserId()));
-            map.put("userName",one.getUsername());
+            Map<String,String> map=new HashMap<>();
+            map.put("userId",Long.toString(sysUser.getUserId()));
+            map.put("username",sysUser.getUsername());
+            map.put("userType",loginParam.getUserType());
             String token = jwtUtils.generateToken(map);
             //返回登录成功的信息
-            LoginResult result = new LoginResult();
-            result.setToken(token);
-            result.setUserId(one.getUserId());
-            result.setUserName(one.getUsername());
-            return ResultUtils.success("登录成功",result);
-        }else{
+            LoginResult loginResult = new LoginResult();
+            loginResult.setToken(token);
+            loginResult.setUserId(sysUser.getUserId());
+            loginResult.setUserName(sysUser.getNickName());
+            loginResult.setUserType(loginParam.getUserType());
+            return ResultUtils.success("登录成功",loginResult);
+        }else {
             return ResultUtils.error("用户类型错误");
         }
     }

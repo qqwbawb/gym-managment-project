@@ -12,6 +12,7 @@ import com.xq.web.sys_user_role.entity.SysUserRole;
 import com.xq.web.sys_user_role.service.SysUserRoleService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,9 @@ public class SysUserController {
     @Autowired
     private SysUserRoleService sysUserRoleService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     //新增员工
     @PostMapping
     public ResultVo addUser(@RequestBody SysUser sysUser){
@@ -40,9 +44,7 @@ public class SysUserController {
             return ResultUtils.error("用户已存在");
         }
         //密码加密
-        if(StringUtils.isNotBlank(sysUser.getPassword())){
-            sysUser.setPassword(DigestUtils.md5DigestAsHex(sysUser.getPassword().getBytes()));
-        }
+        sysUser.setPassword(passwordEncoder.encode(sysUser.getPassword()));
         sysUser.setIsAdmin("0");
         sysUser.setCreateTime(new Date());
         //存到数据库中
@@ -104,20 +106,6 @@ public class SysUserController {
         query.lambda().eq(SysUserRole::getUserId,userId);
         SysUserRole one=sysUserRoleService.getOne(query);
         return ResultUtils.success("查询成功",one);
-    }
-
-    //重置密码
-    @PutMapping("/resetPwd")
-    public ResultVo resetPwd(@RequestBody SysUser sysUser){
-        //重置密码
-        sysUser.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
-        sysUser.setUpdateTime(new Date());
-
-        boolean save = sysUserService.updateById(sysUser);
-        if(save){
-            return  ResultUtils.success("重置密码成功");
-        }
-        return ResultUtils.error("重置密码失败");
     }
 
     //查询课程教练

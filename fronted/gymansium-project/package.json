@@ -14,6 +14,7 @@
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",
     "axios": "^1.20.0",
+    "echarts": "^6.1.0",
     "element-plus": "^2.14.6",
     "pinia": "^4.0.3",
     "pinia-plugin-persistedstate": "^4.7.1",

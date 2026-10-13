@@ -3,8 +3,7 @@
     <!-- 搜索栏 -->
     <el-form :model="listParam" :inline="true" size="default">
       <el-form-item>
-        <el-input v-model="listParam.phone" placeholder="请输入电
-话"></el-input>
+        <el-input v-model="listParam.phone" placeholder="请输入电话"></el-input>
       </el-form-item>
       <el-form-item>
         <el-input
@@ -32,10 +31,8 @@
       <el-table-column prop="email" label="邮箱"></el-table-column>
       <el-table-column prop="userType" label="类型">
         <template #default="scope">
-            <el-tag v-if="scope.row.userType == '1'"
-type="success" size="default">员工</el-tag>
-            <el-tag v-if="scope.row.userType == '2'"
-type="danger" size="default">教练</el-tag>
+            <el-tag v-if="scope.row.userType == '1'" type="success" size="default">员工</el-tag>
+            <el-tag v-if="scope.row.userType == '2'" type="danger" size="default">教练</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="salary" label="薪水"></el-table-column>
@@ -47,9 +44,9 @@ type="danger" size="default">教练</el-tag>
       </el-table-column>
       <el-table-column  label="操作" align="center" width="320">
         <template #default="scope">
-          <el-button v-permission="['sys:user:edit']"type="primary" :icon="Edit" size="default"@click="editBtn(scope.row)">编辑</el-button>
-          <el-button v-permission="['sys:user:delete']"type="danger" :icon="Delete" size="default"@click="deleteBtn(scope.row)">删除</el-button>
-          <el-button v-permission="['sys:user:resetPassword']"type="warning" :icon="Edit" size="default"@click="resetPwdBtn(scope.row)">重置密码</el-button>
+          <el-button type="primary" :icon="Edit" size="default" @click="editBtn(scope.row)">编辑</el-button>
+          <el-button type="danger" :icon="Delete" size="default" @click="deleteBtn(scope.row)">删除</el-button>
+          <el-button type="warning" :icon="Edit" size="default" @click="resetPasBtn(scope.row)">重置密码</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -76,7 +73,7 @@ import useUser from "@/composables/user/useUser";
 //表格
 const { listParam,getList,searchBtn,resetBtn,tableList,sizeChange,currentChange,tableHeight,refresh } = useTable();
 //新增、编辑
-const { addBtn, editBtn, deleteBtn,resetPwdBtn,addRef } = useUser(getList);
+const { addBtn, editBtn, deleteBtn,resetPasBtn,addRef } = useUser(getList);
 void addRef;
 </script>
 <style scoped></style>

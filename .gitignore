@@ -43,3 +43,7 @@ logs/
 .DS_Store
 Thumbs.db
 *.tmp
+
+# ===== 数据库备份与临时产物 =====
+backup/
+*.orig-backup

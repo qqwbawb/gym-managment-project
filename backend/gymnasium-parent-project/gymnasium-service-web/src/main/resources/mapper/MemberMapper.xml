@@ -7,6 +7,6 @@
     </update>
 
     <update id="subMoney">
-        update member set money=money-#{param.money} where member_id=#{param.memberId}
+        update member set money=money-#{param.money} where member_id=#{param.memberId}  and money >= #{param.money}
     </update>
 </mapper>

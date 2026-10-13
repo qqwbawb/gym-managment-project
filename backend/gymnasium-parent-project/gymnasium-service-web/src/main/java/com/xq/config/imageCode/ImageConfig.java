@@ -1,4 +1,4 @@
-package com.xq.config;
+package com.xq.config.imageCode;
 
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.impl.DefaultKaptcha;

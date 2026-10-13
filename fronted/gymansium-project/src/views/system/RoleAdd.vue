@@ -18,10 +18,10 @@
         <el-form-item prop="roleName" label="角色名称">
           <el-input v-model="addModel.roleName"></el-input>
         </el-form-item>
-        <el-form-item prop="roleName" label="角色类型">
+        <el-form-item prop="types" label="角色类型">
           <el-select
           style="width: 100%"
-            v-model="addModel.type"
+            v-model="addModel.types"
             class="m-2"
             placeholder="请选择角色类型"
             size="default"
@@ -52,13 +52,14 @@ import { addApi, editApi } from "@/api/role/index";
 import { EditType, Title } from "@/type/BaseEnum";
 //表单的ref属性
 const addFormRef = ref<FormInstance>();
+//当前操作模式（新增/编辑），与「角色类型」是两回事，必须独立存储
+const editType = ref<string>(EditType.ADD);
 //定义表单绑定的属性
 const addModel = reactive<AddRoleModel>({
-  type: "",
+  types: "",
   roleId: "",
   roleName: "",
   remark: "",
-  // types: "",
 });
 //角色类型
 const options = ref([
@@ -79,8 +80,8 @@ const show = (type: string, row?: AddRoleModel) => {
   dialog.width = 630;
   //设置标题
   type == EditType.ADD ? (dialog.title = Title.ADD) :(dialog.title = Title.EDIT);
-  //如果是编辑，需要回显数据
-  addModel.type = type;
+  //记录当前模式（不能用 addModel 的字段兼作模式标记，否则会覆盖角色类型）
+  editType.value = type;
   dialog.visible = true;
   nextTick(() => {
     addFormRef.value?.resetFields();
@@ -111,7 +112,7 @@ const commit = () => {
   addFormRef.value?.validate(async (valid) => {
     if (valid) {
       let res = null;
-      if (addModel.type == EditType.ADD) {
+      if (editType.value == EditType.ADD) {
         //新增
         res = await addApi(addModel);
       } else {

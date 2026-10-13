@@ -18,5 +18,11 @@ public class SysRole {
     private Date createTime;
     private Date updateTime;
 
+    /**
+     * 角色类型 1：员工类型 2：会员类型
+     * 注意：数据库列名为 types（非 type），不能省略 s
+     */
+    private String types;
+
 
 }

@@ -1,4 +1,4 @@
-package com.xq.config;
+package com.xq.config.minio;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

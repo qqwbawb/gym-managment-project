@@ -1,4 +1,4 @@
-package com.xq.config;
+package com.xq.config.minio;
 
 import io.minio.MinioClient;
 import org.springframework.beans.factory.annotation.Autowired;

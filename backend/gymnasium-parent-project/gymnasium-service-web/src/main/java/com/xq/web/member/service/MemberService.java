@@ -16,4 +16,7 @@ public interface MemberService extends IService<Member> {
     void joinApply(JoinParam joinParam)throws ParseException;
 
     void recharge(RechargeParam rechargeParam);
+
+    //根据用户名查询会员
+    public Member loadUser(String username);
 }

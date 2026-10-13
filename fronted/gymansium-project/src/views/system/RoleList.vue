@@ -18,6 +18,13 @@
     <el-table :height="tableHeight" :data="tableList.list" borderstripe>
       <el-table-column prop="roleName" label="角色名称"></el-table-column>
       <el-table-column prop="remark" label="角色描述"></el-table-column>
+      <el-table-column label="角色类型" width="120" align="center">
+        <template #default="scope">
+          <el-tag :type="scope.row.types == '2' ? 'success' : 'primary'">
+            {{ scope.row.types == '2' ? '会员类型' : '员工类型' }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column  label="操作" width="320" align="center">
         <template #default="scope">
             <el-button type="primary" :icon="Edit" size="default" @click="editBtn(scope.row)">编辑</el-button>

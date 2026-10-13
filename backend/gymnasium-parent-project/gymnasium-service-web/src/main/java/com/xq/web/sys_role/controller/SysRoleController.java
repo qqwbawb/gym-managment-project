@@ -8,6 +8,7 @@ import com.xq.web.sys_role.service.SysRoleService;
 import com.xq.web.sys_role_menu.entity.SaveMenuParam;
 import com.xq.web.sys_role_menu.service.RoleMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class SysRoleController {
 
     //新增角色信息
     @PostMapping
+    @PreAuthorize("hasAuthority('sys:role:add')")
     public ResultVo addRole(@RequestBody SysRole Role){
         Role.setCreateTime(new Date());
         boolean save= sysRoleService.save(Role);

@@ -236,8 +236,25 @@
 - 前端新增 `api/order` 与 `composables/order`（useOrderTable / useFaDrawer / useChildDrawer），订单列表 `OrderList.vue` 完成联调（含订单明细抽屉）
 - 商品类型补充购物车参数（`num` / `AddCar`）
 
+## [0.14.0] - 2026-10-13
+
+### 新增（feat）
+
+#### Spring Security 认证授权
+- 整合 Spring Security：`SpringSecurityConfig`（登录 / 验证码接口放行、其余接口认证、Token 校验过滤器）、`CheckTokenFilter`（JWT Token 校验）、`CustomizedUserDetailService`（会员 / 员工双账号体系）、认证失败 / 权限不足统一处理器
+- 登录接口重构：接入 `AuthenticationManager` 统一认证，密码加密升级为 BCrypt
+- 新增重置密码 `/api/home/resetPassword`、修改密码 `/api/home/updatePassword`、退出登录 `/api/home/loginOut` 接口
+
+#### 首页数据看板（ECharts）
+- 后端新增 `home` 模块：`HomeController`（统计总数、最近反馈、热销商品、热销卡、热销课程）
+- `goods_order` 模块补充热销商品 / 热销卡 / 热销课程统计查询
+- 前端集成 ECharts，首页看板 `dashboard/Index.vue` 完成：总数统计卡片 + 热销图表 + 最近反馈
+
+### 工程优化（improve）
+- 配置类按功能分包整理（imageCode / minio / mybatisPlus / swagger）
+- 新增数据库初始化脚本（`sql/gym_system_full_rebuild.sql`）
+
 ## [未发布]
 
 ### 规划（planned）
-- 数据库初始化脚本（docs/sql/）
-- 数据统计看板（ECharts）、Spring Security 认证授权
+- 权限模块进一步完善（Spring Security 方法级授权细化）

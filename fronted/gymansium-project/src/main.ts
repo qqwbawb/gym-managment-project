@@ -18,6 +18,8 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import objCoppy from './utils/objCopy'
 //信息确认框
 import myconfirm from './utils/myconfirm'
+//导入echarts
+import * as echarts from 'echarts'
 //导入permission
 import './permission.ts'
 const app = createApp(App);
@@ -28,6 +30,7 @@ app.mount('#app')
 //挂载全局属性
 app.config.globalProperties.$objCoppy = objCoppy;
 app.config.globalProperties.$myconfirm = myconfirm;
+app.config.globalProperties.$echarts = echarts;
 //全局注册图标组件
 for (const [key, component] of
   Object.entries(ElementPlusIconsVue)) {

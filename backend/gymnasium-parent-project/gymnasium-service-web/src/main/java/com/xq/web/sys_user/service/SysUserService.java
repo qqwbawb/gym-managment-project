@@ -11,4 +11,6 @@ public interface SysUserService extends IService<SysUser> {
 
     IPage<SysUser> list(PageParam pageParam);
 
+    //根据员工姓名查询员工信息
+    SysUser loadUser(String username);
 }

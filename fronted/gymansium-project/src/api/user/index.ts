@@ -31,7 +31,3 @@ export const getRoleApi = (userId: string) => {
     return http.get("/api/user/role", { userId: userId })
 }
 
-//重置密码
-export const resetPwdApi = (param: AddUserModel) => {
-    return http.put("/api/user/resetPwd", param)
-}

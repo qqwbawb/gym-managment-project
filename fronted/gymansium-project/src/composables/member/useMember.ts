@@ -1,3 +1,4 @@
+import { resetPasswordApi } from "@/api/home"
 import { deleteApi } from "@/api/member"
 import type { MemberType } from "@/api/member/MemberModel"
 import useInstance from "@/hooks/useInstance"
@@ -30,10 +31,27 @@ export default function useMember(getList: FuncList) {
         }
     }
 
+    //重置密码
+    const resetPasBtn = async (row: MemberType) => {
+        let confirm = await global.$myconfirm('确定重置密码吗？默认重置密码为123456')
+        if (confirm) {
+            let param = {
+                userId: row.memberId,
+                userType: '1'
+            }
+            let res = await resetPasswordApi(param)
+            if (res && res.code == 200) {
+                ElMessage.success(res.msg)
+                getList()
+            }
+        }
+    }
+
     return {
         addBtn,
         editBtn,
         deleteBtn,
-        addRef
+        addRef,
+        resetPasBtn
     }
 }

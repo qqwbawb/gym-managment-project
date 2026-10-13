@@ -2,4 +2,21 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xq.web.goods_order.mapper.GoodsOrderMapper">
+
+
+    <select id="hotGoods" resultType="com.xq.web.home.entity.EchartItem">
+        select g.name,sum(go.num) as value
+        from goods as g inner join goods_order as go on go.goods_id=g.goods_id
+        group by g.goods_id order by  value desc limit 3
+    </select>
+    <select id="hotCards" resultType="com.xq.web.home.entity.EchartItem">
+        select ma.card_type AS name,COUNT(ma.apply_id) as value
+        from member_apply as ma GROUP BY ma.card_type,ma.card_day
+        order by value desc limit 3
+    </select>
+    <select id="hotCourse" resultType="com.xq.web.home.entity.EchartItem">
+        select c.course_name as name,COUNT(mc.member_course_id) as value
+        from course as c left join member_course as mc on mc.course_id=c.course_id
+        group by c.course_id order by value desc limit 3
+    </select>
 </mapper>

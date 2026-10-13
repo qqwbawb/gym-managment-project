@@ -1,4 +1,4 @@
-package com.xq.config;
+package com.xq.config.swagger;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

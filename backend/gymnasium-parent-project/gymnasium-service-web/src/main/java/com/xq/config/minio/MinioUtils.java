@@ -1,4 +1,4 @@
-package com.xq.config;
+package com.xq.config.minio;
 import com.alibaba.fastjson.JSONObject;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;

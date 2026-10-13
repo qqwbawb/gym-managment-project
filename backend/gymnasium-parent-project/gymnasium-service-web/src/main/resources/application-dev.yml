@@ -32,6 +32,9 @@ jwt:
   issuer: krisswen #颁发者
   secret: com.xq #配置密钥
   expiration: 30 #配置过期时间
+#不需要token验证的需求，逗号分隔配置
+ignore:
+  url: /api/login/login,/api/login/image
 #定义日志输出格式
 logging:
   pattern:

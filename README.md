@@ -160,15 +160,14 @@ GymSystem
 - 下单接口 `/api/order/down`（购物车批量下单、自动计算总价、记录操作人）、订单列表 `/api/order/list`
 - 前端订单列表 `OrderList.vue`（含订单明细抽屉）、`api/order` / `composables/order`
 
-### 已完成：阶段六（部分）—— 登录认证、权限分配、动态菜单
+### 已完成：阶段六 —— 登录认证、权限分配、动态菜单、Spring Security、首页看板
 
 **登录认证**
 - 后端 `login` 模块：验证码生成 `/api/login/image`、登录 `/api/login/login`，支持会员 / 员工双账号体系
 - 整合 kaptcha 图形验证码（Session 校验，Base64 返回前端）
 - JWT 工具类 `JwtUtils` + JWT 配置（颁发者 / 密钥 / 过期时间），登录成功后签发 Token
-- 登录校验：MD5 密码比对，按用户类型区分会员（member）与员工（sys_user）账号
+- 登录校验：按用户类型区分会员（member）与员工（sys_user）账号，密码升级为 BCrypt 加密
 - 前端登录页 `Login.vue`、Pinia 用户状态（持久化）、全局路由守卫（未登录自动跳转登录页）
-- 会员新增接口密码 MD5 加密，为会员登录做准备
 
 **角色权限分配（权限树）**
 - 后端 `sys_role_menu`（角色-菜单中间表）模块：权限树回显 `/api/role/getMenuTree`、保存分配 `/api/role/saveRoleMenu`
@@ -180,6 +179,15 @@ GymSystem
 - 前端 `store/menu` + `permission.ts` 全局路由守卫：登录后动态注册路由，失败自动清理登录态
 - 侧边菜单按权限动态渲染；新增个人中心 `center.vue`、退出登录 `LoginOut.vue`、头部用户头像下拉
 
+**Spring Security 认证授权**
+- 整合 Spring Security：登录 / 验证码接口放行、其余接口统一认证，`CheckTokenFilter` 校验 JWT Token
+- 自定义 `UserDetailsService`（会员 / 员工双账号体系）与认证失败 / 权限不足统一处理器
+- 重置密码 `/api/home/resetPassword`、修改密码 `/api/home/updatePassword`、退出登录 `/api/home/loginOut`
+
+**首页数据看板**
+- 后端 `home` 模块：统计总数（会员 / 订单 / 员工 / 器材）、最近反馈、热销商品 / 热销卡 / 热销课程
+- 前端集成 ECharts：首页看板完成总数统计卡片 + 热销图表 + 最近反馈
+
 ### 开发路线图
 
 | 阶段 | 内容 | 状态 |
@@ -189,7 +197,7 @@ GymSystem
 | 阶段三 | 会员业务：会员卡类型、会员信息、办卡、充值、我的充值 | 已完成 |
 | 阶段四 | 课程管理：课程维护与图片上传、选课报名与我的课程 | 已完成 |
 | 阶段五 | 业务扩展：器材、商品、失物招领、反馈、订单 | 已完成 |
-| 阶段六 | 登录认证（已完成）、权限树分配（已完成）、动态菜单（已完成）、Spring Security、首页看板 | 开发中 |
+| 阶段六 | 登录认证、权限树分配、动态菜单、Spring Security、首页数据看板 | 已完成 |
 
 ## 环境要求
 
@@ -203,7 +211,7 @@ GymSystem
 ### 1. 初始化数据库
 
 1. 创建数据库：`CREATE DATABASE gym_system DEFAULT CHARACTER SET utf8mb4;`
-2. 执行 `docs/sql/` 下的初始化脚本（建表 + 初始数据，随开发阶段逐步补充）。
+2. 执行 `sql/` 下的初始化脚本 `gym_system_full_rebuild.sql`（建表 + 初始数据）。
 
 ### 2. 启动后端
 

@@ -32,7 +32,7 @@ class Http {
     //axios发送请求之前的处理
     this.instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
       //在请求头部携带token
-      let token = userStore().token;
+      let token = userStore().getToken;
       if (token) {
         config.headers['token'] = token
       }

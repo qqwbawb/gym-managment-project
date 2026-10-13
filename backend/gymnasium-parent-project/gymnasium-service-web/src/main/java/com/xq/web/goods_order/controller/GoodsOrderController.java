@@ -12,6 +12,8 @@ import com.xq.web.goods_order.entity.GoodsOrder;
 import com.xq.web.goods_order.entity.OrderItem;
 import com.xq.web.goods_order.entity.OrderParam;
 import com.xq.web.goods_order.service.GoodsOrderService;
+import com.xq.web.home.entity.Echart;
+import com.xq.web.home.entity.EchartItem;
 import com.xq.web.sys_user.entity.SysUser;
 import com.xq.web.sys_user.service.SysUserService;
 import org.apache.commons.lang.StringUtils;
@@ -71,4 +73,5 @@ public class GoodsOrderController {
         IPage<GoodsOrder> goodsOrderIPage=goodsOrderService.page(page,queryWrapper);
         return ResultUtils.success("查询成功",goodsOrderIPage);
     }
+
 }

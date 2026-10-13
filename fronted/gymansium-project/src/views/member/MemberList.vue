@@ -78,9 +78,10 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item :icon="ChatLineSquare"@click="rechargeBtn(scope.row)">充值</el-dropdown-item>
-                  <el-dropdown-item :icon="Edit"@click="editBtn(scope.row)">编辑</el-dropdown-item>
+                  <el-dropdown-item :icon="ChatLineSquare" @click="rechargeBtn(scope.row)">充值</el-dropdown-item>
+                  <el-dropdown-item :icon="Edit" @click="editBtn(scope.row)">编辑</el-dropdown-item>
                   <el-dropdown-item type="danger" :icon="Delete"@click="deleteBtn(scope.row)">删除</el-dropdown-item>
+                  <el-dropdown-item :icon="Edit" @click="resetPasBtn(scope.row)">重置密码</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -130,7 +131,7 @@ const {
   refresh,
 } = useTable();
 //新增、编辑操作
-const { addBtn, editBtn, deleteBtn, addRef } =useMember(getList);
+const { addBtn, editBtn, deleteBtn, resetPasBtn ,addRef } =useMember(getList);
 void addRef;
 //办卡
 const { joinRef, joinBtn } = useJoin();

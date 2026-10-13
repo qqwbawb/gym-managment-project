@@ -1,7 +1,7 @@
 package com.xq.web.image;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xq.config.MinioUtils;
+import com.xq.config.minio.MinioUtils;
 import com.xq.utils.ResultUtils;
 import com.xq.utils.ResultVo;
 import lombok.extern.slf4j.Slf4j;

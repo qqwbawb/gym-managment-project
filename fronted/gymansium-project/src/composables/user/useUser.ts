@@ -1,10 +1,11 @@
 import type { AddUserModel } from "@/api/user/UserModel"
 import { EditType } from "@/type/BaseEnum"
 import { ref } from "vue"
-import { deleteApi, resetPwdApi } from "@/api/user"
+import { deleteApi } from "@/api/user"
 import { ElMessage } from "element-plus"
 import type { FuncList } from "@/type/BaseType"
 import useInstance from "@/hooks/useInstance"
+import { resetPasswordApi } from "@/api/home"
 
 export default function useUser(getList: FuncList) {
     const { global } = useInstance()
@@ -36,13 +37,16 @@ export default function useUser(getList: FuncList) {
     }
 
     //重置密码
-    const resetPwdBtn = async (row: AddUserModel) => {
-        let confirm = await global.$myconfirm('确定重置密码吗？')
+    const resetPasBtn = async (row: AddUserModel) => {
+        let confirm = await global.$myconfirm('确定重置密码吗？默认重置密码为123456')
         if (confirm) {
-            let res = await resetPwdApi(row)
+            let param = {
+                userId: row.userId,
+                userType: '2'
+            }
+            let res = await resetPasswordApi(param)
             if (res && res.code == 200) {
                 ElMessage.success(res.msg)
-                //刷新表格
                 getList()
             }
         }
@@ -52,7 +56,7 @@ export default function useUser(getList: FuncList) {
         addBtn,
         editBtn,
         deleteBtn,
-        resetPwdBtn,
+        resetPasBtn,
         addRef
     }
 }

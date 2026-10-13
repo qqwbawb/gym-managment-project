@@ -1,6 +1,6 @@
 //角色数据类型
 export type AddRoleModel = {
-    type: string
+    types: string
     roleId: string
     roleName: string
     remark: string
