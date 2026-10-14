@@ -3,4 +3,51 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper
         namespace="com.xq.web.member_course.mapper.MemberCourseMapper">
+
+    <!--
+        课程订单分页查询：member_course 关联 member 表，带出报名会员的姓名与卡号。
+        按报名时间倒序（新增在前），便于管理端查看最新课程订单。
+    -->
+    <select id="selectCourseOrderPage"
+            resultType="com.xq.web.member_course.entity.MemberCourse">
+        select mc.member_course_id,
+               mc.course_id,
+               mc.member_id,
+               mc.teacher_id,
+               mc.course_name,
+               mc.course_price,
+               mc.course_details,
+               mc.image,
+               mc.course_hour,
+               mc.teacher_name,
+               m.name         as member_name,
+               m.username     as member_username
+        from member_course mc
+        left join member m on mc.member_id = m.member_id
+        <where>
+            <if test="courseName != null and courseName != ''">
+                and mc.course_name like concat('%', #{courseName}, '%')
+            </if>
+        </where>
+        order by mc.member_course_id desc
+    </select>
+
+    <!--
+        查询报名某门课程的全部学员（导出名单用，不分页）。
+        按报名时间正序（先报名的排前面）。
+    -->
+    <select id="selectCourseStudents"
+            resultType="com.xq.web.member_course.entity.MemberCourse">
+        select mc.member_course_id,
+               mc.course_id,
+               mc.member_id,
+               mc.course_name,
+               m.name         as member_name,
+               m.username     as member_username,
+               m.phone        as member_phone
+        from member_course mc
+        left join member m on mc.member_id = m.member_id
+        where mc.course_id = #{courseId}
+        order by mc.member_course_id asc
+    </select>
 </mapper>

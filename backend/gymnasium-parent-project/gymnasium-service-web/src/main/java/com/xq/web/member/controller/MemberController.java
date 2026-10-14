@@ -136,16 +136,26 @@ public class MemberController {
     @PostMapping("/joinApply")
     @PreAuthorize("hasAuthority('sys:memberList:setCard')")
     public ResultVo joinApply(@RequestBody JoinParam joinParam)throws ParseException {
-        memberService.joinApply(joinParam);
-        return ResultUtils.success("办卡成功");
+        try {
+            memberService.joinApply(joinParam);
+            return ResultUtils.success("办卡成功");
+        } catch (RuntimeException e) {
+            //余额不足 / 会员卡类型不存在等业务失败：事务已回滚，返回友好提示
+            return ResultUtils.error(e.getMessage());
+        }
     }
 
     //充值
     @PostMapping("/recharge")
     @PreAuthorize("hasAuthority('sys:memberList:rechart')")
     public ResultVo recharge(@RequestBody RechargeParam rechargeParam){
-        memberService.recharge(rechargeParam);
-        return  ResultUtils.success("充值成功");
+        try {
+            memberService.recharge(rechargeParam);
+            return ResultUtils.success("充值成功");
+        } catch (RuntimeException e) {
+            //充值金额不合法 / 会员不存在等业务失败：返回友好提示
+            return ResultUtils.error(e.getMessage());
+        }
     }
 
     @Autowired

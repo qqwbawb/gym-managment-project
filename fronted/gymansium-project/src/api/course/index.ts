@@ -36,3 +36,8 @@ export const joinCourseApi = (param: SelectCourse) => {
 export const getMyCourseListApi = (param: MyCourseListParam) => {
     return http.get("/api/course/getMyCourseList", param)
 }
+
+//查看报名某课程的学生名单
+export const getCourseStudentsApi = (courseId: string) => {
+    return http.get("/api/course/getCourseStudents", { courseId: courseId })
+}

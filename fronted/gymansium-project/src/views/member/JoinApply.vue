@@ -67,6 +67,9 @@
             ElMessage.success(res.msg);
             eimits('refresh')
             onClose()
+        } else if (res) {
+            //余额不足等业务失败：展示后端返回的错误信息
+            ElMessage.error(res.msg);
         }
     };
 </script>

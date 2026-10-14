@@ -34,8 +34,7 @@ public class LoginFailureHandler implements AuthenticationEntryPoint {
         }else if(e instanceof CustomerAuthenticationException){
             code = 600;
             str = e.getMessage();
-        }else if(e instanceof
-                InsufficientAuthenticationException){
+        }else if(e instanceof InsufficientAuthenticationException){
             str = "无权限访问资源!";
         }
         else{

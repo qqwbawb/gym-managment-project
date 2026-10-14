@@ -103,4 +103,15 @@ public class CourseController {
             return ResultUtils.success("查询成功", page1);
         }
     }
+
+    /**
+     * 查看报名某门课程的学生名单（前端弹抽屉展示，不分页）。
+     * 对应菜单「我的课程」下的「导出学生」按钮权限。
+     */
+    @GetMapping("/getCourseStudents")
+    @PreAuthorize("hasAuthority('sys:mycourse:export')")
+    public ResultVo getCourseStudents(@RequestParam("courseId") Long courseId) {
+        List<MemberCourse> students = memberCourseService.getCourseStudents(courseId);
+        return ResultUtils.success("查询成功", students);
+    }
 }

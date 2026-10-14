@@ -32,6 +32,16 @@ export const userStore = defineStore('userStore', {
         setUserType(userType: string) {
             this.userType = userType
         },
+        //清空登录状态
+        //注意：只调用 localStorage.clear() 是清不掉内存里的 token 的（pinia 的 state 仍在），
+        //会导致路由守卫继续认为「已登录」，进而无限重定向。必须显式重置 state。
+        clearUser() {
+            this.userId = ''
+            this.token = ''
+            this.userType = ''
+            this.codeList = []
+            localStorage.clear()
+        },
         getInfo() {
             return new Promise((resolve, reject) => {
                 getInfoApi({ userType: this.userType, userId: this.userId }).then((res) => {

@@ -55,6 +55,10 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper,Member> implemen
     @Transactional
     public void editMember(Member member) {
         //编辑会员本身
+        //余额(money)与会员价格(price)只允许通过充值/办卡等专项接口变更，
+        //编辑接口一律不得触碰，防止被恶意构造请求或前端数据覆盖余额
+        member.setMoney(null);
+        member.setPrice(null);
         int i = this.baseMapper.updateById(member);
         if(i>0){
             //删除原来的关联信息
@@ -94,11 +98,33 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper,Member> implemen
     private SysUserService sysUserService;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void joinApply(JoinParam joinParam) throws ParseException {
         Member select = this.baseMapper.selectById(joinParam.getMemberId());
+        if (select == null) {
+            throw new RuntimeException("会员不存在");
+        }
         //更新会员信息
         MemberCard card = memberCardMapper.selectById(joinParam.getCardId());
+        if (card == null) {
+            throw new RuntimeException("会员卡类型不存在");
+        }
+
+        //办卡费用：从会员余额原子扣减。
+        //判断（余额 >= 卡价）与扣减在同一条 SQL 内完成（where money >= ?），
+        //由 InnoDB 行锁保证原子性，避免「先查后改」的并发窗口导致余额被扣成负数。
+        BigDecimal price = card.getPrice() == null ? BigDecimal.ZERO : card.getPrice();
+        if (price.compareTo(BigDecimal.ZERO) > 0) {
+            RechargeParam deductParam = new RechargeParam();
+            deductParam.setMemberId(joinParam.getMemberId());
+            deductParam.setMoney(price);
+            int affected = this.baseMapper.subMoney(deductParam);
+            if (affected == 0) {
+                //余额不足或会员不存在：抛异常让整个事务回滚（有效期、办卡明细都不会写入）
+                throw new RuntimeException("余额不足，办卡失败");
+            }
+        }
+
         Member member = new Member();
         member.setMemberId(joinParam.getMemberId());
         member.setCardType(card.getTitle());

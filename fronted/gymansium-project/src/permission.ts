@@ -29,9 +29,17 @@ router.beforeEach(async (to, _from, next) => {
                     //等待路由全部挂载
                     next({ ...to, replace: true })
                 } catch (error) {
+                    // token 已失效（后端 Session 丢失/过期）：
+                    // 清空本地状态并跳登录页。这里必须先判断目标是不是 /login，
+                    // 否则 next('/login') 会再次进入本守卫，形成无限重定向 + 反复弹错。
                     console.error('权限加载失败:', error)
-                    localStorage.clear()
-                    next({ path: '/login' })
+                    ustore.clearUser()
+                    mstore.menuList = []
+                    if (to.path !== '/login') {
+                        next({ path: '/login', replace: true })
+                    } else {
+                        next()
+                    }
                 }
             }
         }
@@ -39,8 +47,8 @@ router.beforeEach(async (to, _from, next) => {
         if (whiteList.indexOf(to.path) !== -1) {//存在白名单，直接放行
             next()
         } else {
-            localStorage.clear()
-            next({ path: '/login' })
+            ustore.clearUser()
+            next({ path: '/login', replace: true })
         }
     }
 })

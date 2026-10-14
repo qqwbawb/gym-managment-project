@@ -463,7 +463,7 @@ INSERT INTO `sys_menu` VALUES (60, 6, '会员重置密码', 'sys:member:resetPas
 INSERT INTO `sys_menu` VALUES (61, 41, '下单', 'sys:orderList:down', '', '', '', '2', '', '订单管理', 70, '2022-07-10 16:26:27', NULL);
 INSERT INTO `sys_menu` VALUES (62, 31, '列表', 'sys:mycourse:list', '', '', '', '2', '', '我的课程', 33, '2023-11-11 21:52:37', NULL);
 INSERT INTO `sys_menu` VALUES (63, 31, '退款', 'sys:mycourse:return', '', '', '', '2', '', '我的课程', 11, '2024-03-07 16:20:22', '2024-03-09 21:15:59');
-INSERT INTO `sys_menu` VALUES (64, 26, '课程订单', 'sys:courseOrder:index', 'courseOrder', '/courseOrder', '/order/OrderList', '1', 'Plus', '课程管理', 41, '2024-03-10 10:21:22', '2024-03-10 10:26:39');
+INSERT INTO `sys_menu` VALUES (64, 26, '课程订单', 'sys:courseOrder:index', 'courseOrder', '/courseOrder', '/order/CourseOrderList', '1', 'Plus', '课程管理', 41, '2024-03-10 10:21:22', '2024-03-10 10:26:39');
 INSERT INTO `sys_menu` VALUES (65, 64, '退款', 'sys:courseOrder:return', '', '', '', '2', '', '课程订单', NULL, '2024-03-10 10:22:51', NULL);
 
 -- ----------------------------

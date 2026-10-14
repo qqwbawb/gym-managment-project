@@ -3,6 +3,44 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosReq
 import { ElMessage } from 'element-plus';
 import { userStore } from '@/store/user';
 
+//错误提示去重：同一个提示短时间内只弹一次，避免并发请求失败时刷屏
+let lastErrorMsg = '';
+let lastErrorTime = 0;
+function showError(msg: string) {
+  const now = Date.now();
+  if (msg === lastErrorMsg && now - lastErrorTime < 2000) {
+    return;
+  }
+  lastErrorMsg = msg;
+  lastErrorTime = now;
+  ElMessage.error(msg);
+}
+
+//登录失效处理：清理本地状态并跳转登录页
+//用标志位保证「并发请求同时 401」时只处理一次，否则两个请求会各弹一次错误并重复跳转
+let redirectingToLogin = false;
+function handleAuthExpired(msg: string) {
+  if (redirectingToLogin) {
+    return;
+  }
+  redirectingToLogin = true;
+  showError(msg);
+  //必须显式清 store 的 state：localStorage.clear() 只清了持久化数据，
+  //内存中的 token 仍在，路由守卫会继续认为「已登录」而陷入重定向循环。
+  try {
+    userStore().clearUser();
+  } catch (e) {
+    localStorage.clear();
+  }
+  //延迟到当前微任务队列结束后再跳转，避免在拦截器里同步操作路由引发死循环
+  setTimeout(() => {
+    redirectingToLogin = false;
+    if (window.location.pathname !== '/login') {
+      window.location.href = '/login';
+    }
+  }, 300);
+}
+
 //axios请求配置
 const config = {
   //baseURL: 'http://localhost:8089', //真实请求接口的地址，真实上线是一个域名
@@ -44,73 +82,80 @@ class Http {
     })
     //axios请求返回之后的处理
     this.instance.interceptors.response.use((res: AxiosResponse) => {
-      // console.log(res.data)
+      // 业务层非 200
       if (res.data.code != 200) {
-        ElMessage.error(res.data.msg || '服务器出错!')
+        // code=700 是后端 CustomerAccessDeniedHandler 返回的「无权限访问」，
+        // 属于正常的权限拦截（HTTP 状态是 200），需要提示但绝不能让用户掉线
+        if (res.data.code === 700) {
+          showError(res.data.msg || '无权限访问')
+          return Promise.reject(res.data.msg || '无权限访问')
+        }
+        showError(res.data.msg || '服务器出错!')
         return Promise.reject(res.data.msg || '服务器出错')
       } else {
         return res.data
       }
     }, (error) => {
-      console.log('进入错误')
       error.data = {};
       if (error && error.response) {
         switch (error.response.status) {
           case 400:
             error.data.msg = '错误请求';
-            ElMessage.error(error.data.msg)
+            showError(error.data.msg)
             break
           case 401:
-            error.data.msg = '未授权，请重新登录';
-            ElMessage.error(error.data.msg)
+            error.data.msg = '登录已失效，请重新登录';
+            handleAuthExpired(error.data.msg)
             break
           case 403:
-            error.data.msg = '拒绝访问';
-            ElMessage.error(error.data.msg)
+            // 注意：后端 @PreAuthorize 拦截走的是 CustomerAccessDeniedHandler（HTTP 200 + code 700），
+            // 正常不会走到这里；真出现 403 也按「登录失效」处理，避免用户卡在空页面
+            error.data.msg = '登录已失效，请重新登录';
+            handleAuthExpired(error.data.msg)
             break
           case 404:
             error.data.msg = '请求错误,未找到该资源';
-            ElMessage.error(error.data.msg)
+            showError(error.data.msg)
             break
           case 405:
             error.data.msg = '请求方法未允许';
-            ElMessage.error(error.data.msg)
+            showError(error.data.msg)
             break
           case 408:
             error.data.msg = '请求超时';
-            ElMessage.error(error.data.msg)
+            showError(error.data.msg)
             break
           case 500:
             error.data.msg = '服务器端出错';
-            ElMessage.error(error.data.msg)
+            showError(error.data.msg)
             break
           case 501:
             error.data.msg = '网络未实现';
-            ElMessage.error(error.data.msg)
+            showError(error.data.msg)
             break
           case 502:
             error.data.msg = '网络错误';
-            ElMessage.error(error.data.msg)
+            showError(error.data.msg)
             break
           case 503:
             error.data.msg = '服务不可用';
-            ElMessage.error(error.data.msg)
+            showError(error.data.msg)
             break
           case 504:
             error.data.msg = '网络超时';
-            ElMessage.error(error.data.msg)
+            showError(error.data.msg)
             break
           case 505:
             error.data.msg = 'http版本不支持该请求';
-            ElMessage.error(error.data.msg)
+            showError(error.data.msg)
             break
           default:
             error.data.msg = `连接错误${error.response.status}`;
-            ElMessage.error(error.data.msg)
+            showError(error.data.msg)
         }
       } else {
         error.data.msg = "连接到服务器失败";
-        ElMessage.error(error.data.msg)
+        showError(error.data.msg)
       }
       return Promise.reject(error)
     })

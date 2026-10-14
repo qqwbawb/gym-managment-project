@@ -80,6 +80,9 @@
                     ElMessage.success(res.msg)
                     emits('refresh')
                     onClose();
+                } else if (res) {
+                    //充值失败（金额不合法 / 会员不存在等）：展示后端返回的错误信息
+                    ElMessage.error(res.msg);
                 }
             }
         });

@@ -54,10 +54,7 @@ const store = userStore();
 
 //清理本地登录态（token / 用户信息 / 持久化数据）
 const clearLoginState = () => {
-  store.setToken("");
-  store.setUserId("");
-  store.setUserType("");
-  localStorage.clear();
+  store.clearUser();
 };
 
 const loginOut = async () => {
