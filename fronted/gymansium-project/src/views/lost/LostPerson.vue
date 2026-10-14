@@ -48,7 +48,7 @@
     lostPerson: "",
   });
   //弹框属性
-  const { dialog, onClose, onConfirm, onShow } = useDialog();
+  const { dialog, onClose, onShow } = useDialog();
   //显示弹框
   const show = (row:LostType) => {
     dialog.title = "认领";

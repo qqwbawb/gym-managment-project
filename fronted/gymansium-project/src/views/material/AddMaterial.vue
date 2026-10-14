@@ -42,7 +42,7 @@ const { global } = useInstance();
 //表单的ref属性
 const addFormRef = ref<FormInstance>();
 //弹框属性
-const { dialog, onClose, onConfirm, onShow } = useDialog();
+const { dialog, onClose, onShow } = useDialog();
 //定义方法给外部使用
 const show = (type: string, row?: MaterialType) => {
   //设置弹框属性
@@ -73,7 +73,7 @@ const addModel = reactive<MaterialType>({
   details: "",
   id: "",
 });
-const validateNum = (rule: any, value: any, callback: any) => {
+const validateNum = (_rule: any, value: any, callback: any) => {
   if (value === 0 || value < 0) {
     callback(new Error("请填写数量"));
   } else {

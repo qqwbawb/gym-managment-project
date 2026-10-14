@@ -59,11 +59,12 @@ import LostPerson from "./LostPerson.vue";
 import useLost from "@/composables/lost/useLost";
 import { Plus, Edit, Delete, Search, Close } from "@element-plus/icons-vue";
 import useTable from "@/composables/lost/useTable";
-import useInstance from "@/hooks/useInstance";
-const { global } = useInstance();
 //表格
 const { listParm, searchBtn,resetBtn,tableData,getList,sizeChange,currentChange,tableHeight,reFresh} = useTable();
 //新增 编辑
 const { addBtn, editBtn, deleteBtn,addRef,lostBtn,lostPersonRef }= useLost(getList);
+// addRef / lostPersonRef 供模板 ref 使用，此处显式引用避免 TS6133
+void addRef;
+void lostPersonRef;
 </script>
 <style scoped></style>

@@ -50,5 +50,7 @@ const { listParm
 ,searchBtn,resetBtn,getList,tableData,sizeChange,currentChange,tableHeight,reFresh} = useTable();
 //新增编辑
 const { addBtn, editBtn, deleteBtn,addRef } =useSuggest(getList);
+// addRef 供模板 ref="addRef" 使用，此处显式引用避免 TS6133
+void addRef;
 </script>
 <style scoped></style>

@@ -43,7 +43,7 @@ const saveParm = reactive<SaveAssignParam>({
 const { assignTreeData, getMenuTree, defaultProps } =
 useAssign();
 //弹框属性
-const { dialog, onClose, onConfirm, onShow } = useDialog();
+const { dialog, onClose, onShow } = useDialog();
 //弹框显示
 const show = (roleId: string, name: string) => {
   saveParm.roleId = roleId;

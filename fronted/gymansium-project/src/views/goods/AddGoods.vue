@@ -149,7 +149,7 @@ import type { FormInstance } from "element-plus";
   //表单ref属性
   const addFormRef = ref<FormInstance>();
   //弹框属性
-  const { dialog, onClose, onConfirm, onShow } = useDialog();
+  const { dialog, onClose, onShow } = useDialog();
   //定义外部使用的方法
   const show = (type: string, row?: GoodsType) => {
     //清空图片数据
@@ -213,7 +213,7 @@ import type { FormInstance } from "element-plus";
     price: 0,
     store: 0,
   });
-  const validatePrice = (rule: any, value: any, callback: any) =>
+  const validatePrice = (_rule: any, value: any, callback: any) =>
 {
     if (value === 0 || value < 0) {
       callback(new Error("请填写商品价格"));
@@ -221,7 +221,7 @@ import type { FormInstance } from "element-plus";
       callback();
     }
   };
-  const validateStore = (rule: any, value: any, callback: any) =>
+  const validateStore = (_rule: any, value: any, callback: any) =>
 {
     if (value === 0 || value < 0) {
       callback(new Error("请填写商品库存"));

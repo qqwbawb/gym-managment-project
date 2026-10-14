@@ -33,8 +33,10 @@ jwt:
   secret: com.xq #配置密钥
   expiration: 30 #配置过期时间
 #不需要token验证的需求，逗号分隔配置
+#注：loginOut 需要放行——用户 token 过期后仍应能正常退出登录，
+#    该接口本身只是清理服务端 SecurityContext，不涉及敏感数据。
 ignore:
-  url: /api/login/login,/api/login/image
+  url: /api/login/login,/api/login/image,/api/home/loginOut
 #定义日志输出格式
 logging:
   pattern:

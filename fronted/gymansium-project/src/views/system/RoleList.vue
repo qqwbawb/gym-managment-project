@@ -60,5 +60,8 @@ import useRole from "@/composables/role/useRole";
 const { listParam, getList, searchBtn,resetBtn,tableList,sizeChange ,currentChange,tableHeight,refresh}= useTable();
 //增删改查业务
 const { addBtn, editBtn, deleteBtn,addRef,assignBtn,assignRoleRef} = useRole(getList);
+// addRef / assignRoleRef 供模板 ref 使用，此处显式引用避免 TS6133
+void addRef;
+void assignRoleRef;
 </script>
 <style scoped></style>

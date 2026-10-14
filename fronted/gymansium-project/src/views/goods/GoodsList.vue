@@ -77,5 +77,7 @@ import useGoods from "@/composables/goods/useGoods";
 const {tableHeight,listParam,searchBtn,resetBtn,getList,tableData,sizeChange,currentChange,reFresh,} = useTable();
 //新增、编辑
 const { addBtn, editBtn, deleteBtn, addRef } = useGoods(getList);
+// addRef 供模板 ref="addRef" 使用，此处显式引用避免 TS6133
+void addRef;
 </script>
 <style scoped></style>

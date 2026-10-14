@@ -37,6 +37,7 @@ public class SysRoleController {
 
     //编辑角色
     @PutMapping
+    @PreAuthorize("hasAuthority('sys:role:edit')")
     public ResultVo editRole(@RequestBody SysRole Role){
         Role.setUpdateTime(new Date());
         boolean save= sysRoleService.updateById(Role);
@@ -49,6 +50,7 @@ public class SysRoleController {
 
     //删除角色
     @DeleteMapping("/{roleId}")
+    @PreAuthorize("hasAuthority('sys:role:delete')")
     public ResultVo deleteRole(@PathVariable("roleId") Long roleId){
         boolean b=sysRoleService.removeById(roleId);
         if(b){
@@ -92,6 +94,7 @@ public class SysRoleController {
     private RoleMenuService roleMenuService;
     //保存分配权限
     @PostMapping("/saveRoleMenu")
+    @PreAuthorize("hasAuthority('sys:role:assign')")
     public ResultVo saveRoleMenu(@RequestBody SaveMenuParam  saveMenuParam){
         roleMenuService.saveMenu(saveMenuParam);
         return ResultUtils.success("权限分配成功");

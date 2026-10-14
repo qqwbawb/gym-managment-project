@@ -38,7 +38,7 @@ import useInstance from "@/hooks/useInstance";
 const { global } = useInstance();
 const addFormRef = ref<FormInstance>();
 //弹框属性
-const { dialog, onClose, onConfirm, onShow } = useDialog();
+const { dialog, onClose, onShow } = useDialog();
 //显示弹框
 const show = (type: string, row?: SuggestType) => {
   console.log(type)

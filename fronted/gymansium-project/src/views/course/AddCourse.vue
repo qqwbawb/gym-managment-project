@@ -122,7 +122,7 @@ import type { CourseType } from "@/api/course/CourseModel";
 import SysDialog from "@/components/SysDialog.vue";
 import useDialog from "@/hooks/useDialog";
 import { ElMessage } from "element-plus";
-import type { FormInstance, UploadProps } from "element-plus";
+import type { FormInstance } from "element-plus";
 import { nextTick, reactive, ref } from "vue";
 import useUpload from "@/composables/course/useUpload";
 import useEditor from "@/composables/course/useEditor";
@@ -135,7 +135,7 @@ const { global } = useInstance();
 //表单的ref属性
 const addFormRef = ref<FormInstance>();
 //弹框属性
-const { dialog, onClose, onShow, onConfirm } = useDialog();
+const { dialog, onClose, onShow } = useDialog();
 //教练选择
 const { teacherData, listTeacher } = useSelectTeacher();
 //图片上传
@@ -225,14 +225,14 @@ const addModel = reactive<CourseType>({
   courseDetails: "",
   coursePrice: 0,
 });
-const validateCourseHour = (rule: any, value: any, callback: any)=> {
+const validateCourseHour = (_rule: any, value: any, callback: any)=> {
   if (value === 0 || value < 0) {
     callback(new Error("请填写课程课时"));
   } else {
     callback();
   }
 };
-const validateCoursePrice = (rule: any, value: any, callback:
+const validateCoursePrice = (_rule: any, value: any, callback:
 any) => {
   if (value === 0 || value < 0) {
     callback(new Error("请填写课程价格"));

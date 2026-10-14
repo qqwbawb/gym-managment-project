@@ -10,6 +10,7 @@ import com.xq.web.member_card.entity.MemberCard;
 import com.xq.web.member_card.service.MemberCardService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,7 @@ public class MemberCardController {
 
     //新增
     @PostMapping
+    @PreAuthorize("hasAuthority('sys:memberRoot:add')")
     public ResultVo addMemberCard(@RequestBody MemberCard memberCard){
         if(memberCardService.save(memberCard)){
             return ResultUtils.success("新增成功");
@@ -29,6 +31,7 @@ public class MemberCardController {
 
     //修改
     @PutMapping
+    @PreAuthorize("hasAuthority('sys:memberRoot:edit')")
     public ResultVo updateMemberCard(@RequestBody MemberCard memberCard){
         if(memberCardService.updateById(memberCard)){
             return ResultUtils.success("修改成功");
@@ -38,6 +41,7 @@ public class MemberCardController {
 
     //删除
     @DeleteMapping("/{cardId}")
+    @PreAuthorize("hasAuthority('sys:memberRoot:delete')")
     public ResultVo deleteMemberCard(@PathVariable("cardId") Long cardId){
         if(memberCardService.removeById(cardId)){
             return ResultUtils.success("删除成功");

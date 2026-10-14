@@ -192,7 +192,7 @@
 
   <script setup lang="ts">
   import { ref, watch } from "vue";
-  import { Plus, Edit, Delete, Search, Close } from "@element-plus/icons-vue";
+  import { Plus, Delete, Search, Close } from "@element-plus/icons-vue";
   import useOrderTable from "@/composables/order/useOrderTable";
   import useFaDrawer from "@/composables/order/useFaDrawer";
   import useChildDrawer from"@/composables/order/useChildDrawer";
@@ -214,7 +214,7 @@
     goodsHeight,
     selectGoods,
   } = useChildDrawer();
-  const { faDrawer, cancelClick, confirmClick, order,deleteCarBtn } =useFaDrawer(selectGoods);
+  const { faDrawer, cancelClick, order,deleteCarBtn } =useFaDrawer(selectGoods);
   //总价格
   const totalPrice = ref<string | number>(0);
   //购物车数量点击事件

@@ -61,5 +61,7 @@ import useMaterial from "@/composables/material/useMaterial";
 const { listParam,searchBtn,resetBtn,tableData,sizeChange,currentChange,tableHeight,reFresh,getList} = useTable();
 //新增、编辑
 const {addBtn,editBtn,deleteBtn,addRef} = useMaterial(getList)
+// addRef 供模板 ref="addRef" 使用，此处显式引用避免 TS6133
+void addRef;
 </script>
 <style scoped></style>

@@ -10,6 +10,7 @@ import com.xq.web.goods.entity.GoodsParam;
 import com.xq.web.goods.service.GoodsService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,7 @@ public class GoodsController {
     private GoodsService goodsService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('sys:goodsList:add')")
     public ResultVo addGoods(@RequestBody Goods goods){
         if(goodsService.save(goods)){
             return ResultUtils.success("新增成功");
@@ -28,6 +30,7 @@ public class GoodsController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAuthority('sys:goodsList:edit')")
     public ResultVo updateGoods(@RequestBody Goods goods){
         if(goodsService.updateById(goods)){
             return ResultUtils.success("编辑成功");
@@ -36,6 +39,7 @@ public class GoodsController {
     }
 
     @DeleteMapping("/{goodsId}")
+    @PreAuthorize("hasAuthority('sys:goodsList:delete')")
     public ResultVo deleteGoods(@PathVariable("goodsId") Long goodsId){
         if(goodsService.removeById(goodsId)){
             return ResultUtils.success("删除成功");

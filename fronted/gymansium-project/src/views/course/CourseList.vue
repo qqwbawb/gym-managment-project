@@ -85,5 +85,7 @@ import useCourse from "../../composables/course/useCourse";
 const {listParam,tableData,getList,sizeChange,currentChange,tableHeight,searchBtn,resetBtn,reFresh,} = useTable();
 //新增、编辑
 const { addBtn, editBtn, deleteBtn, addRef,joinBtn } = useCourse(getList);
+// addRef 供模板 ref="addRef" 使用，此处显式引用避免 TS6133
+void addRef;
 </script>
 <style scoped></style>

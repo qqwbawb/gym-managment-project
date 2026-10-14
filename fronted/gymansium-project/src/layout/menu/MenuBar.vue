@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from "vue";
+import { computed } from "vue";
 import MenuItem from "@/layout/menu/MenuItem.vue";
 import MenuLogo from "@/layout/menu/MenuLogo.vue";
 import { useRoute } from "vue-router";

@@ -79,7 +79,7 @@ import useInstance from "@/hooks/useInstance";
 const { global } = useInstance();
 const addFormRef = ref<FormInstance>();
 //弹框属性
-const { dialog, onClose, onConfirm, onShow } = useDialog();
+const { dialog, onClose, onShow } = useDialog();
 //定义外部使用的方法
 const show = (type: string, row?: LostType) => {
   //设置弹框属性

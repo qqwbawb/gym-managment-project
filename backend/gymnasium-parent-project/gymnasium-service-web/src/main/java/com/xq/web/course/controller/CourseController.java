@@ -9,12 +9,11 @@ import com.xq.web.course.entity.Course;
 import com.xq.web.course.entity.CourseList;
 import com.xq.web.course.entity.PageParam;
 import com.xq.web.course.service.CourseService;
-import com.xq.web.member.entity.Member;
-import com.xq.web.member.service.MemberService;
 import com.xq.web.member_course.entity.MemberCourse;
 import com.xq.web.member_course.service.MemberCourseService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +26,7 @@ public class CourseController {
     private CourseService courseService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('sys:courseList:add')")
     public ResultVo addCourse(@RequestBody Course course) {
         if(courseService.save(course)) {
             return ResultUtils.success("新增成功");
@@ -35,6 +35,7 @@ public class CourseController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAuthority('sys:courseList:edit')")
     public ResultVo editCourse(@RequestBody Course course) {
         if(courseService.updateById(course)) {
             return ResultUtils.success("编辑成功");
@@ -43,6 +44,7 @@ public class CourseController {
     }
 
     @DeleteMapping("/{courseId}")
+    @PreAuthorize("hasAuthority('sys:courseList:delete')")
     public ResultVo deleteCourse(@PathVariable("courseId") Long courseId) {
         if(courseService.removeById(courseId)) {
             return ResultUtils.success("删除成功");
@@ -67,29 +69,21 @@ public class CourseController {
     @Autowired
     private MemberCourseService memberCourseService;
 
-    @Autowired
-    private MemberService memberService;
-
-    //报名课程
+    /**
+     * 选课报名。
+     * 业务逻辑与事务边界全部下沉到 MemberCourseService.joinCourse()，
+     * Controller 只负责接收参数、包装返回结果。
+     */
     @PostMapping("/joinCourse")
+    @PreAuthorize("hasAuthority('sys:courseList:join')")
     public ResultVo joinCourse(@RequestBody MemberCourse memberCourse) {
-        //查询是否已经报过该课程
-        QueryWrapper<MemberCourse> queryWrapper=new QueryWrapper<>();
-        queryWrapper.lambda().eq(MemberCourse::getCourseId,memberCourse.getCourseId())
-                    .eq(MemberCourse::getMemberId,memberCourse.getMemberId());
-        MemberCourse one = memberCourseService.getOne(queryWrapper);
-        if(one!=null) {
-            return ResultUtils.error("已经报名过了");
+        try {
+            memberCourseService.joinCourse(memberCourse);
+            return ResultUtils.success("报名成功");
+        } catch (RuntimeException e) {
+            //重复报名 / 余额不足等业务失败：事务已回滚，返回友好提示
+            return ResultUtils.error(e.getMessage());
         }
-        //判断余额是否足够
-        Course course = courseService.getById(memberCourse.getCourseId());
-        Member member = memberService.getById(memberCourse.getMemberId());
-        int flag = member.getMoney().compareTo(course.getCoursePrice());
-        if(flag==-1) {
-            return ResultUtils.error("余额不足");
-        }
-        memberCourseService.joinCourse(memberCourse);
-        return ResultUtils.success("报名成功");
     }
 
     //查询我的课程列表

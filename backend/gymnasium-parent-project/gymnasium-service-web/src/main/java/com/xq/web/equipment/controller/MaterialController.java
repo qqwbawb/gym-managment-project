@@ -10,6 +10,7 @@ import com.xq.web.equipment.entity.Material;
 import com.xq.web.equipment.service.MaterialService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,7 @@ public class MaterialController {
     private MaterialService materialService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('sys:materialList:add')")
     public ResultVo addMaterial(@RequestBody Material material){
         if(materialService.save(material)){
             return ResultUtils.success("新增成功");
@@ -28,6 +30,7 @@ public class MaterialController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAuthority('sys:materialList:edit')")
     public ResultVo updateMaterial(@RequestBody Material material){
         if(materialService.updateById(material)){
             return ResultUtils.success("编辑成功");
@@ -36,6 +39,7 @@ public class MaterialController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('sys:materialList:delete')")
     public ResultVo deleteMaterial(@PathVariable("id") Long id){
         if(materialService.removeById(id)){
             return ResultUtils.success("删除成功");

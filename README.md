@@ -182,7 +182,14 @@ GymSystem
 **Spring Security 认证授权**
 - 整合 Spring Security：登录 / 验证码接口放行、其余接口统一认证，`CheckTokenFilter` 校验 JWT Token
 - 自定义 `UserDetailsService`（会员 / 员工双账号体系）与认证失败 / 权限不足统一处理器
+- 全部业务接口增加 `@PreAuthorize` 方法级权限注解，与前端 `v-permission` 按钮权限联动
 - 重置密码 `/api/home/resetPassword`、修改密码 `/api/home/updatePassword`、退出登录 `/api/home/loginOut`
+
+**工程质量：事务与并发安全**
+- 核心写操作统一 `@Transactional` 事务边界：下单、选课报名、充值
+- 库存 / 余额扣减采用 **SQL 原子操作**（判断条件写入 WHERE，由 InnoDB 行锁保证原子性），从根上避免超卖与并发扣款
+- 操作人从 Spring Security 登录态获取，不信任前端传入的 userId
+- 前端路由重构：删除静态路由死代码，业务路由全部由后端动态菜单下发注册
 
 **首页数据看板**
 - 后端 `home` 模块：统计总数（会员 / 订单 / 员工 / 器材）、最近反馈、热销商品 / 热销卡 / 热销课程

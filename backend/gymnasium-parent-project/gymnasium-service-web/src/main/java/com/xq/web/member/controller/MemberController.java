@@ -15,9 +15,15 @@ import com.xq.web.member_role.entity.MemberRole;
 import com.xq.web.member_role.service.MemberRoleService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
+
+import com.xq.web.sys_user.entity.SysUser;
 
 import java.text.ParseException;
 import java.util.List;
@@ -34,6 +40,7 @@ public class MemberController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('sys:memberList:add')")
     public ResultVo add(@RequestBody Member member){
         //判断会员卡号是否重复
         QueryWrapper<Member> query = new QueryWrapper<>();
@@ -48,6 +55,7 @@ public class MemberController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAuthority('sys:memberList:edit')")
     public ResultVo edit(@RequestBody Member member){
         QueryWrapper<Member> query = new QueryWrapper<>();
         query.lambda().eq(Member::getUsername,member.getUsername());
@@ -60,6 +68,7 @@ public class MemberController {
     }
 
     @DeleteMapping("/{memberId}")
+    @PreAuthorize("hasAuthority('sys:memberList:delete')")
     public ResultVo delete(@PathVariable("memberId") Long memberId){
         memberService.deleteMember(memberId);
         return ResultUtils.success("删除成功");
@@ -125,6 +134,7 @@ public class MemberController {
 
     //办卡提交
     @PostMapping("/joinApply")
+    @PreAuthorize("hasAuthority('sys:memberList:setCard')")
     public ResultVo joinApply(@RequestBody JoinParam joinParam)throws ParseException {
         memberService.joinApply(joinParam);
         return ResultUtils.success("办卡成功");
@@ -132,6 +142,7 @@ public class MemberController {
 
     //充值
     @PostMapping("/recharge")
+    @PreAuthorize("hasAuthority('sys:memberList:rechart')")
     public ResultVo recharge(@RequestBody RechargeParam rechargeParam){
         memberService.recharge(rechargeParam);
         return  ResultUtils.success("充值成功");
@@ -143,14 +154,28 @@ public class MemberController {
     //充值查询
     @GetMapping("/getMyRecharge")
     public ResultVo getMyRecharge(RechargeParamList rechargeParamList){
-        //判断当前用户是会员还是员工
-        if(rechargeParamList.getUserType().equals("1")){
+        //从登录态（SecurityContext）解析当前用户身份，而不是信任前端传入的 userType / memberId。
+        //原因：userType 由前端提交时可被篡改（例如会员传 userType=2 就能查全部充值记录），
+        //属于越权访问（水平/垂直越权），必须以后端登录态为准。
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
+            return ResultUtils.error("未获取到登录信息");
+        }
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        //会员：只能查自己的充值记录；员工：可查全部
+        if (userDetails instanceof Member) {
+            Member loginMember = (Member) userDetails;
+            //以登录态中的会员 id 覆盖前端传入值，防止越权查询他人记录
+            rechargeParamList.setMemberId(loginMember.getMemberId());
+            rechargeParamList.setUserType("1");
             IPage<MemberRecharge> list = memberRechargeService.getRechargeByMemberId(rechargeParamList);
-            return ResultUtils.success("查询成功",list);
-        } else if (rechargeParamList.getUserType().equals("2")) {
+            return ResultUtils.success("查询成功", list);
+        } else if (userDetails instanceof SysUser) {
+            rechargeParamList.setUserType("2");
             IPage<MemberRecharge> list = memberRechargeService.getRechargeList(rechargeParamList);
-            return ResultUtils.success("查询成功",list);
-        }else {
+            return ResultUtils.success("查询成功", list);
+        } else {
             return ResultUtils.error("用户类型错误");
         }
     }

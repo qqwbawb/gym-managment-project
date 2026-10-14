@@ -45,8 +45,6 @@
   import useMyCourseTable from
 "../../composables/mycourse/useMyCourseTable";
   import type { CourseType } from "@/api/course/CourseModel";
-  import useInstance from "@/hooks/useInstance";
-  const { global } = useInstance();
   //列表
   const {
     listParam,
@@ -55,9 +53,11 @@
     currentChange,
     tableHeight,
   } = useMyCourseTable();
-  //导出
-  const exportBtn = (row:CourseType)=>{
+  //导出（占位，待接入后端导出接口）
+  const exportBtn = (_row:CourseType)=>{
 
   }
+  // 显式引用，避免 TS6133（占位方法暂未被模板调用）
+  void exportBtn;
   </script>
 <style scoped></style>

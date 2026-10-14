@@ -254,7 +254,29 @@
 - 配置类按功能分包整理（imageCode / minio / mybatisPlus / swagger）
 - 新增数据库初始化脚本（`sql/gym_system_full_rebuild.sql`）
 
-## [未发布]
+## [0.15.0] - 2026-10-14
 
-### 规划（planned）
-- 权限模块进一步完善（Spring Security 方法级授权细化）
+### 新增（feat）
+
+#### Spring Security 方法级权限控制
+- 全部业务 Controller 增加 `@PreAuthorize` 方法级权限注解（`hasAuthority` 按钮级权限标识）
+- 覆盖模块：会员（新增 / 编辑 / 删除 / 办卡 / 充值）、课程（新增 / 编辑 / 删除 / 报名）、员工、角色（编辑 / 删除 / 分配权限）、菜单、会员卡、器材、商品、订单、失物招领、建议反馈
+- 与前端 `v-permission` 指令、动态菜单按钮权限标识联动，实现前后端一致的权限控制
+
+#### 事务与并发安全增强（核心业务）
+- 下单：`@Transactional` 事务包裹，库存改为 **SQL 原子扣减**（`UPDATE ... WHERE store >= ?`，影响行数为 0 即库存不足抛异常回滚），新增库存回补接口（订单取消 / 退货场景），从根上消除超卖
+- 选课报名：业务逻辑下沉至 `MemberCourseService.joinCourse()`，`@Transactional` + 余额 **SQL 原子扣减**（`money >= ?`）+ 重复报名校验；`member_course` 增加联合唯一索引兜底防并发重复报名
+- 充值：`@Transactional` + 余额 SQL 原子自增，操作人改为从 Spring Security 登录态获取（不再信任前端传入的 userId，防止伪造）
+
+#### 前端路由重构与权限联动
+- 删除 `router/index.ts` 中 227 行静态路由死代码，仅保留登录页 / 首页公共路由，业务路由全部由后端 `sys_menu` 动态下发、登录后 `addRoute` 注册
+- 退出登录重构：本地清理登录态（token / 用户信息 / 持久化数据）+ 通知服务端清理 SecurityContext，接口失败也保证本地退出
+- 各业务页面组件配合 `v-permission` 按钮级权限
+
+#### 数据库脚本完善
+- 清理源脚本测试脏数据，补齐一套可直接演示的业务数据（课程 / 商品 / 会员 / 订单等）
+- 演示账号说明：员工端 `admin`（管理员）、`zs001`（员工）、`ls001`（教练），会员端 `2022001`（张三），密码均为 123456
+
+### 修复（fix）
+- `Lost` 实体字段 `found_addres`（原始 schema 拼写缺少末尾 s）显式映射列名，避免驼峰映射错位
+- `application-dev.yml` 放行 `/api/home/loginOut`：token 过期后仍可正常退出登录

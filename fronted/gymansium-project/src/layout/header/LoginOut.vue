@@ -47,23 +47,32 @@ import type { FormInstance } from "element-plus";
 import { ElMessage } from "element-plus";
 import { reactive, ref } from "vue";
 import { updatePasswordApi,loginOutApi } from "@/api/home";
-const { dialog, onClose, onConfirm, onShow } = useDialog();
+const { dialog, onClose, onShow } = useDialog();
 const { global } = useInstance();
 const upForm = ref<FormInstance>();
 const store = userStore();
+
+//清理本地登录态（token / 用户信息 / 持久化数据）
+const clearLoginState = () => {
+  store.setToken("");
+  store.setUserId("");
+  store.setUserType("");
+  localStorage.clear();
+};
+
 const loginOut = async () => {
   const confirm = await global.$myconfirm("确定退出登录吗？");
-  if (confirm) {
-    let res=await loginOutApi()
-    if(res&&res.code==200){
-    //清空用户信息
-    store.setToken("");
-    store.setUserId("");
-    store.setUserType("");
-    localStorage.clear();
+  if (!confirm) return;
+  try {
+    //通知服务端清理 SecurityContext。
+    //注意：即使该接口失败（如 token 已过期、网络异常），也要继续执行本地清理，
+    //因为「退出登录」的本质是客户端丢弃凭证，不能依赖后端接口成功。
+    await loginOutApi();
+  } catch (error) {
+    console.warn("退出登录接口调用失败，仍继续清理本地登录态：", error);
+  } finally {
+    clearLoginState();
     window.location.href = "/login";
-    }
-    
   }
 };
 const updateBtn = () => {
@@ -99,11 +108,8 @@ const commit = () => {
       let res = await updatePasswordApi(parm);
       if (res && res.code == 200) {
         ElMessage.success(res.msg);
-        //清空用户信息
-        store.setToken("");
-        store.setUserId("");
-        store.setUserType("");
-        localStorage.clear();
+        //密码已修改，凭证失效，无条件清理本地登录态并回登录页
+        clearLoginState();
         window.location.href = "/login";
       }
     }

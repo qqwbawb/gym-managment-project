@@ -5,7 +5,7 @@ import { userStore } from './store/user'
 //设置白名单
 const whiteList = ['/login']
 //全局路由守卫
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
     //获取用户相关数据
     const ustore = userStore()
     //获取菜单的store

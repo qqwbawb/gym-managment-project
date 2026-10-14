@@ -18,10 +18,14 @@ import com.xq.web.sys_user.entity.SysUser;
 import com.xq.web.sys_user.service.SysUserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -125,20 +129,45 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper,Member> implemen
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void recharge(RechargeParam rechargeParam) {
-        //SysUser user = sysUserService.getById(rechargeParam.getUserId());
+        if (rechargeParam.getMemberId() == null || rechargeParam.getMoney() == null
+                || rechargeParam.getMoney().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("充值金额不合法");
+        }
         //生成充值明细
         MemberRecharge recharge = new MemberRecharge();
         recharge.setMemberId(rechargeParam.getMemberId());
         recharge.setMoney(rechargeParam.getMoney());
         recharge.setCreateTime(new Date());
-        //recharge.setCreateUser(user.getUsername());
+        //记录操作人：从登录态取，保证充值流水可审计（"谁给我充的值"）
+        recharge.setCreateUser(currentOperator());
         boolean save = memberRechargeService.save(recharge);
-        if(save){
-            //会员账户金额更新
-            this.baseMapper.addMoney(rechargeParam);
+        if (!save) {
+            throw new RuntimeException("充值失败");
         }
+        //会员账户金额更新（SQL 原子自增，并发安全）
+        int affected = this.baseMapper.addMoney(rechargeParam);
+        if (affected == 0) {
+            throw new RuntimeException("充值失败：会员不存在");
+        }
+    }
+
+    /**
+     * 从 Spring Security 登录态中取当前操作人标识。
+     * 不依赖前端传入的 userId，避免被伪造。
+     */
+    private String currentOperator() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+                UserDetails details = (UserDetails) authentication.getPrincipal();
+                return details.getUsername();
+            }
+        } catch (Exception ignored) {
+            // 取不到登录态时不影响主流程，留空即可
+        }
+        return null;
     }
 
     //根据会员名称查询会员信息

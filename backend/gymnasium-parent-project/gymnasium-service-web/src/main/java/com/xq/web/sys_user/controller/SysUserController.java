@@ -12,6 +12,7 @@ import com.xq.web.sys_user_role.entity.SysUserRole;
 import com.xq.web.sys_user_role.service.SysUserRoleService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,7 @@ public class SysUserController {
 
     //新增员工
     @PostMapping
+    @PreAuthorize("hasAuthority('sys:user:add')")
     public ResultVo addUser(@RequestBody SysUser sysUser){
         //判断用户信息是否存在
         QueryWrapper<SysUser> query = new QueryWrapper<>();
@@ -57,6 +59,7 @@ public class SysUserController {
 
     //编辑员工
     @PutMapping
+    @PreAuthorize("hasAuthority('sys:user:edit')")
     public ResultVo editUser(@RequestBody SysUser sysUser){
         //判断用户信息是否存在
         QueryWrapper<SysUser> query = new QueryWrapper<>();
@@ -80,6 +83,7 @@ public class SysUserController {
 
     //删除用户
     @DeleteMapping("/{userId}")
+    @PreAuthorize("hasAuthority('sys:user:delete')")
     public ResultVo deleteUser(@PathVariable("userId") Long userId){
         boolean remove = sysUserService.removeById(userId);
         if(remove){
