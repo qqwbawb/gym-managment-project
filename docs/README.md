@@ -1,6 +1,6 @@
 # 健身房管理系统（GymSystem）
 
-基于 **Spring Boot + Vue 3** 的前后端分离健身房管理系统，采用「先搭框架、再按模块迭代」的开发方式。当前已完成前后端基础框架搭建，业务功能按开发路线图逐步实现，每个阶段均可独立运行、独立验证。
+基于 **Spring Boot + Vue 3** 的前后端分离健身房管理系统。采用「先搭框架、再按模块迭代」的方式开发，覆盖系统管理、会员业务、课程、商品订单等 20+ 业务模块，具备 RBAC 权限体系、动态路由、JWT 认证授权、事务与并发安全处理等能力，**功能已开发完成**，各阶段均可独立运行、独立验证。
 
 ## 技术栈
 
@@ -14,10 +14,11 @@
 | MyBatis-Plus | 3.4.1 | ORM / 分页插件 |
 | MySQL | 8.0 | 数据库 |
 | Druid | 1.2.1 | 数据库连接池 |
-| Swagger2（springfox） | 2.9.2 | 接口文档 |
-| java-jwt | 3.10.3 | 登录令牌（JWT） |
+| Spring Security | 5.7.x | 认证与接口级鉴权（`@PreAuthorize`） |
+| java-jwt | 3.10.3 | 登录令牌（JWT 无状态认证） |
+| MinIO | 8.3.9 | 对象存储（图片上传 / 回显） |
 | kaptcha | 2.3.2 | 图形验证码 |
-| EasyPoi | 4.2.0 | Excel 导入导出 |
+| Swagger2（springfox） | 2.9.2 | 接口文档 |
 
 ### 前端（fronted）
 
@@ -28,8 +29,11 @@
 | Vite | 8.3 | 构建工具 |
 | Element Plus | 2.14 | UI 组件库 |
 | Pinia | 4.0 | 状态管理 |
-| Vue Router | 4.6 | 路由 |
+| pinia-plugin-persistedstate | 4.7 | 登录态持久化 |
+| Vue Router | 4.6 | 路由（含动态路由） |
 | Axios | 1.20 | HTTP 请求 |
+| ECharts | 6.1 | 首页数据看板 |
+| wangEditor | 5.1 | 课程详情富文本编辑 |
 | Sass | 1.104 | 样式预处理器 |
 
 ## 项目结构
@@ -84,7 +88,7 @@ GymSystem
 - 正式整合 Swagger2 接口文档（2.9.2）与跨域配置
 
 **用户管理（员工管理）**
-- 后端 `sys_user` + `sys_user_role`（用户-角色中间表）模块：新增（MD5 加密 + 重名校验）、编辑、删除、分页列表（密码脱敏）、重置密码
+- 后端 `sys_user` + `sys_user_role`（用户-角色中间表）模块：新增（密码加密 + 重名校验，早期为 MD5，阶段六统一升级为 BCrypt）、编辑、删除、分页列表（密码脱敏）、重置密码
 - 前端员工列表：搜索（电话/姓名）、表格展示（性别/类型/状态标签）、分页、编辑/删除/重置密码操作、权限指令 `v-permission`
 - 新增员工页面 `AddUser.vue`（含角色选择）
 
@@ -131,7 +135,7 @@ GymSystem
 - 前端集成 wangEditor 富文本编辑器，课程详情支持图片上传
 
 **选课报名与我的课程**
-- 后端 `member_course`（会员-课程中间表）模块：选课接口 `/api/course/joinCourse`（重复报名校验 + 余额判断 + 扣费）
+- 后端 `member_course`（会员-课程中间表）模块：选课接口 `/api/course/joinCourse`（重复报名校验 + 余额判断 + 原子扣费，整体事务包裹，阶段六增强）
 - 我的课程 `/api/course/getMyCourseList`：会员查已报课程，教练查本人授课课程
 - 前端「我的课程」页面 `mycourse.vue` 完成选课报名与课程列表
 
@@ -159,7 +163,7 @@ GymSystem
 
 **商品订单**
 - 后端 `goods_order` 模块：`GoodsOrder` / `OrderItem` / `OrderParam` 实体、Mapper + 映射文件、Service、Controller
-- 下单接口 `/api/order/down`（购物车批量下单、自动计算总价、记录操作人）、订单列表 `/api/order/list`
+- 下单接口 `/api/order/down`（购物车批量下单、自动计算总价、**原子扣减库存**、记录操作人）、订单列表 `/api/order/list`
 - 前端订单列表 `OrderList.vue`（含订单明细抽屉）、`api/order` / `composables/order`
 
 ### 已完成：阶段六 —— 登录认证、权限分配、动态菜单、Spring Security、首页看板
@@ -213,6 +217,7 @@ GymSystem
 - JDK 1.8+
 - Maven 3.6+
 - MySQL 8.0（数据库名：`gym_system`）
+- MinIO（图片上传 / 回显功能需要，默认 `127.0.0.1:9000`，bucket 名 `gymnasium`）
 - Node.js 18+、npm
 
 ## 快速启动
@@ -220,15 +225,30 @@ GymSystem
 ### 1. 初始化数据库
 
 1. 创建数据库：`CREATE DATABASE gym_system DEFAULT CHARACTER SET utf8mb4;`
-2. 执行 `sql/` 下的初始化脚本 `gym_system_full_rebuild.sql`（建表 + 初始数据）。
+2. 执行 `sql/gym_system_full_rebuild.sql`（建表 + 初始数据）。
 
-### 2. 启动后端
+> ⚠️ 该脚本为**全量重建**脚本，内含 `DROP TABLE IF EXISTS`，执行会**清空 `gym_system` 库中的既有数据**。请先备份。
 
-1. 修改 `backend/gymnasium-parent-project/gymnasium-service-web/src/main/resources/application-dev.yml` 中的数据库账号密码；
+### 2. 演示账号
+
+初始化脚本内置以下账号，**密码统一为 `123456`**：
+
+| 端 | 账号 | 角色 |
+|----|------|------|
+| 员工端 | `root` / `admin` | 超级管理员（可见全部菜单） |
+| 员工端 | `zs001` / `wangwu` | 普通员工 |
+| 员工端 | `ls001` / `2020001` | 教练 |
+| 会员端 | `2022001` | 会员（张三） |
+
+> 登录页需先选择「用户类型」再填写账号：员工对应「员工」，会员对应「会员」。
+
+### 3. 启动后端
+
+1. 修改 `backend/gymnasium-parent-project/gymnasium-service-web/src/main/resources/application-dev.yml` 中的数据库账号密码（以及 MinIO 地址、JWT 密钥）；
 2. IDEA 中打开 `backend/gymnasium-parent-project`，运行 `GYMServiceWebApplication` 启动类；
-3. 启动成功后访问接口文档：`http://localhost:8089/swagger-ui/index.html`。
+3. 启动成功后访问接口文档：`http://localhost:8089/swagger-ui.html`。
 
-### 3. 启动前端
+### 4. 启动前端
 
 ```bash
 cd fronted/gymansium-project
@@ -238,8 +258,8 @@ npm run dev        # 启动开发服务，自动打开 http://localhost:8080
 
 ## 开发日志
 
-每个阶段的迭代记录见 [CHANGELOG.md](./docs/CHANGELOG.md)，与 Git 提交历史一一对应。
+每个阶段的迭代记录见 [CHANGELOG.md](./CHANGELOG.md)，与 Git 提交历史一一对应。
 
 ## License
 
-本项目使用 [MIT](./LICENSE) 协议开源。
+本项目使用 [MIT](../LICENSE) 协议开源。

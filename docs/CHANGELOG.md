@@ -278,5 +278,20 @@
 - 演示账号说明：员工端 `admin`（管理员）、`zs001`（员工）、`ls001`（教练），会员端 `2022001`（张三），密码均为 123456
 
 ### 修复（fix）
+- 数据库脚本菜单 `url` 修正：7 条菜单的组件路径多了一层中间目录（如 `/system/user/UserList`），与 `src/views` 实际结构不符，导致前端 `import.meta.glob` 解析为 `undefined`、菜单点开空白；已对齐为 `/system/UserList` 等正确路径（14/14 菜单均可正常加载）
 - `Lost` 实体字段 `found_addres`（原始 schema 拼写缺少末尾 s）显式映射列名，避免驼峰映射错位
 - `application-dev.yml` 放行 `/api/home/loginOut`：token 过期后仍可正常退出登录
+
+### 工程优化（improve）
+- 清理前端 TypeScript 类型告警 30 处（未使用的解构变量 / 导入 / 校验回调参数），`npm run build`（`vue-tsc -b && vite build`）可完整通过并产出 `dist/`
+- 数据库演示数据整理：清理源脚本中无意义的测试脏数据（如 `22`、`666`、`测试1`、`9999`），替换为完整可演示的健身房业务数据（课程 / 商品 / 会员 / 员工 / 失物 / 反馈），并统一演示密码为 `123456`
+
+## [0.16.0] - 2026-10-14
+
+### 文档（docs）
+- 项目文档归档至 `docs/` 目录：`docs/README.md`（项目说明、技术栈、开发路线图、快速启动）、`docs/CHANGELOG.md`（版本迭代记录）；根目录 `README.md` 精简为指引页
+- 完善 `docs/README.md`：
+  - 技术栈补充 Spring Security 5.7 / MinIO 8.3.9 / ECharts 6.1 / wangEditor 5.1 / pinia-plugin-persistedstate，移除未实际使用的 EasyPoi
+  - 修正 Swagger 访问路径为 `/swagger-ui.html`（springfox 2.9.2 的实际路径）
+  - 新增演示账号表、MinIO 环境依赖说明，以及全量重建脚本会清空既有数据的警告
+  - 修正文档内相对链接（`CHANGELOG.md` / `../LICENSE`），并同步阶段二 / 四 / 五中已过时的描述（密码加密演进、选课与下单的原子操作）
