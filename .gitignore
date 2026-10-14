@@ -47,3 +47,6 @@ Thumbs.db
 # ===== 数据库备份与临时产物 =====
 backup/
 *.orig-backup
+
+# ===== 个人简历与隐私材料 =====
+.resume/
