@@ -295,3 +295,13 @@
   - 修正 Swagger 访问路径为 `/swagger-ui.html`（springfox 2.9.2 的实际路径）
   - 新增演示账号表、MinIO 环境依赖说明，以及全量重建脚本会清空既有数据的警告
   - 修正文档内相对链接（`CHANGELOG.md` / `../LICENSE`），并同步阶段二 / 四 / 五中已过时的描述（密码加密演进、选课与下单的原子操作）
+
+## [0.17.0] - 2026-10-28
+
+### 修复（fix）
+
+#### 选课并发重复报名的异常友好处理
+- `MemberCourseServiceImpl.joinCourse()` 与 `down()` 写入报名记录时，捕获 `org.springframework.dao.DuplicateKeyException`
+- 此前业务层预检（`select` 判断是否已报名）在并发窗口下可能同时通过，最终由 `member_course` 表唯一索引 `uk_member_course(course_id, member_id)` 在数据库层硬拦第二个事务；但该异常会直接以 500 返回，对用户不友好
+- 现在统一转为业务提示："请勿重复提交，该课程您已报名过"，并随事务回滚已扣余额
+- 形成完整三层防重：业务预检给常见场景快速提示 → 数据库唯一索引兜底并发正确性 → 异常转换给用户可读反馈

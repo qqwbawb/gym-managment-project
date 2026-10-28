@@ -22,10 +22,14 @@ import myconfirm from './utils/myconfirm'
 import * as echarts from 'echarts'
 //导入permission
 import './permission.ts'
+//按钮级权限指令 v-permission
+import permission from './directives/permission'
 const app = createApp(App);
 app.use(router).use(ElementPlus, {
   locale: zhCn,
 }).use(pinia)
+//注册按钮权限指令
+app.directive('permission', permission)
 app.mount('#app')
 //挂载全局属性
 app.config.globalProperties.$objCoppy = objCoppy;

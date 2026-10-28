@@ -17,6 +17,7 @@ import com.xq.web.member_course.entity.MemberCourse;
 import com.xq.web.member_course.mapper.MemberCourseMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,8 +92,14 @@ public class MemberCourseServiceImpl extends ServiceImpl<MemberCourseMapper, Mem
         }
 
         //⑤ 写入报名记录（与扣款同属一个事务）
+        //数据库唯一索引 uk_member_course 是最后一道防线：
+        //并发下预检可能同时通过，真正的并发重复报名由唯一索引拦截，转成友好提示
         BeanUtils.copyProperties(course, memberCourse);
-        this.baseMapper.insert(memberCourse);
+        try {
+            this.baseMapper.insert(memberCourse);
+        } catch (DuplicateKeyException e) {
+            throw new RuntimeException("请勿重复提交，该课程您已报名过");
+        }
     }
 
     /**
@@ -159,10 +166,15 @@ public class MemberCourseServiceImpl extends ServiceImpl<MemberCourseMapper, Mem
             }
 
             //写入报名记录（与扣款同属一个事务）
+            //唯一索引 uk_member_course 兜底：并发重复报名在此被拦截，转友好提示
             MemberCourse memberCourse = new MemberCourse();
             BeanUtils.copyProperties(course, memberCourse);
             memberCourse.setMemberId(orderParam.getMemberId());
-            this.baseMapper.insert(memberCourse);
+            try {
+                this.baseMapper.insert(memberCourse);
+            } catch (DuplicateKeyException e) {
+                throw new RuntimeException("请勿重复提交，课程【" + course.getCourseName() + "】已报名");
+            }
         }
     }
 
