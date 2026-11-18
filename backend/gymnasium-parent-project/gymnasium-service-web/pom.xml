@@ -35,26 +35,29 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
         </dependency>
-        <!--mybatis-plus启动器-->
+        <!--mybatis-plus启动器
+            Spring Boot 3 必须使用 mybatis-plus-spring-boot3-starter：
+            老的 mybatis-plus-boot-starter 传递依赖 mybatis-spring 2.x（Spring 5 时代），
+            在 Spring 6.1 下启动会抛
+            "Invalid value type for attribute 'factoryBeanObjectType': java.lang.String" -->
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        </dependency>
+        <!-- 分页插件 PaginationInnerInterceptor 自 3.5.9 起拆到该模块 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
         </dependency>
         <!--druid连接池-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
-        <!-- swagger api文档 -->
+        <!-- springdoc-openapi：替代 springfox（springfox 2.9.2 与 Spring Boot 3 不兼容） -->
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>2.9.2</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.9.2</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
         </dependency>
 
         <dependency>
@@ -102,6 +105,19 @@
         <dependency>
             <groupId>com.github.penggle</groupId>
             <artifactId>kaptcha</artifactId>
+            <exclusions>
+                <!-- kaptcha 2.3.2 仅在 KaptchaServlet 中使用 javax.servlet，
+                     本项目只用 DefaultKaptcha/Config 生成图片，不依赖该 Servlet，
+                     故排除掉可兼容 Spring Boot 3（jakarta.servlet） -->
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- spring security 启动器-->
         <dependency>
@@ -112,27 +128,10 @@
 
     <build>
         <plugins>
+            <!-- 版本交由 spring-boot-starter-parent 统一管理，不再硬编码旧版本 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.1.4.RELEASE</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
-                <configuration>
-                    <skipTests>true</skipTests>    <!--打包过程默认关掉单元测试 -->
-                </configuration>
             </plugin>
         </plugins>
     </build>

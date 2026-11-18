@@ -8,17 +8,17 @@
 
 | 技术 | 版本 | 用途 |
 |------|------|------|
-| JDK | 1.8 | 运行环境 |
-| Spring Boot | 2.7.18 | 基础框架 |
+| JDK | 17 | 运行环境 |
+| Spring Boot | 3.2.12 | 基础框架 |
 | Maven | 3.6+ | 多模块构建 |
-| MyBatis-Plus | 3.4.1 | ORM / 分页插件 |
+| MyBatis-Plus | 3.5.9 | ORM / 分页插件 |
 | MySQL | 8.0 | 数据库 |
-| Druid | 1.2.1 | 数据库连接池 |
-| Spring Security | 5.7.x | 认证与接口级鉴权（`@PreAuthorize`） |
+| Druid | 1.2.23 | 数据库连接池 |
+| Spring Security | 6.x | 认证与接口级鉴权（`@PreAuthorize`） |
 | java-jwt | 3.10.3 | 登录令牌（JWT 无状态认证） |
 | MinIO | 8.3.9 | 对象存储（图片上传 / 回显） |
 | kaptcha | 2.3.2 | 图形验证码 |
-| Swagger2（springfox） | 2.9.2 | 接口文档 |
+| springdoc-openapi | 2.3.0 | 接口文档（Swagger UI） |
 
 ### 前端（fronted）
 
@@ -70,7 +70,7 @@ GymSystem
 **后端**
 - Maven 多模块工程搭建（`gymnasium-common` 公共模块 + `gymnasium-service-web` 服务模块）
 - 统一返回结果封装：`ResultVo` / `ResultUtils` / `StatusCode`
-- 整合 MyBatis-Plus（分页插件）、Druid 连接池、Swagger2 接口文档依赖
+- 整合 MyBatis-Plus（分页插件）、Druid 连接池、Swagger2 接口文档依赖（阶段内沿用 springfox，0.18.0 升级技术栈时已替换为 springdoc-openapi）
 - 开发环境配置分离（`application.yml` + `application-dev.yml`）
 
 **前端**
@@ -85,7 +85,7 @@ GymSystem
 **角色管理**
 - 后端角色管理 CRUD 接口（实体 / Mapper / Service / Controller），含角色下拉接口 `/api/role/getSelect`
 - 前端角色列表：表格展示、搜索、重置、分页、高度自适应；新增 / 编辑弹框（类型选择、回显）、删除确认
-- 正式整合 Swagger2 接口文档（2.9.2）与跨域配置
+- 正式整合 Swagger2 接口文档（2.9.2）与跨域配置（0.18.0 已迁移至 springdoc-openapi 2.3.0）
 
 **用户管理（员工管理）**
 - 后端 `sys_user` + `sys_user_role`（用户-角色中间表）模块：新增（密码加密 + 重名校验，早期为 MD5，阶段六统一升级为 BCrypt）、编辑、删除、分页列表（密码脱敏）、重置密码
@@ -214,7 +214,7 @@ GymSystem
 
 ## 环境要求
 
-- JDK 1.8+
+- JDK 17+
 - Maven 3.6+
 - MySQL 8.0（数据库名：`gym_system`）
 - MinIO（图片上传 / 回显功能需要，默认 `127.0.0.1:9000`，bucket 名 `gymnasium`）

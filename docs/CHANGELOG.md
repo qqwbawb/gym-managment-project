@@ -305,3 +305,38 @@
 - 此前业务层预检（`select` 判断是否已报名）在并发窗口下可能同时通过，最终由 `member_course` 表唯一索引 `uk_member_course(course_id, member_id)` 在数据库层硬拦第二个事务；但该异常会直接以 500 返回，对用户不友好
 - 现在统一转为业务提示："请勿重复提交，该课程您已报名过"，并随事务回滚已扣余额
 - 形成完整三层防重：业务预检给常见场景快速提示 → 数据库唯一索引兜底并发正确性 → 异常转换给用户可读反馈
+
+## [0.18.0] - 2026-11-18
+
+### 升级（build）
+
+#### 技术栈升级：Spring Boot 2.7 → 3.2、JDK 8 → 17
+- 父工程 `spring-boot-starter-parent` 2.7.18 → 3.2.12，`java.version` 1.8 → 17
+- 依赖版本同步升级：Lombok 1.18.12 → 1.18.34，Druid 1.2.1 → 1.2.23，fastjson 1.2.69 → 1.2.83
+- MyBatis-Plus 3.4.1 → 3.5.9，启动器由 `mybatis-plus-boot-starter` 换成 Boot 3 专用的 `mybatis-plus-spring-boot3-starter`（旧启动器传递的 mybatis-spring 2.x 在 Spring 6.1 下启动会抛 "Invalid value type for attribute 'factoryBeanObjectType'"）
+- 自 3.5.9 起 `PaginationInnerInterceptor` 等依赖 JSqlParser 的插件拆分到独立模块，显式引入 `mybatis-plus-jsqlparser`，否则编译期找不到符号
+- 子模块移除硬编码插件版本（spring-boot-maven-plugin 2.1.4、maven-compiler-plugin 3.1、maven-surefire-plugin 2.19.1），统一交由 parent 管理；旧 compiler 3.1 与新版 Lombok 注解处理器不兼容的问题随之消除
+- 父工程为 `maven-compiler-plugin` 开启 `<parameters>true</parameters>`：Spring 6 依赖编译期参数名解析 `@PathVariable` / `@RequestParam`，未开启会抛 "Name for argument of type [...] not specified"
+
+#### Spring Security 5.7 → 6.x 配置迁移
+- `WebSecurityConfigurerAdapter` 在 Security 6 已移除，改为注册 `SecurityFilterChain` Bean
+- `@EnableGlobalMethodSecurity` 替换为 `@EnableMethodSecurity`，`@PreAuthorize` 用法保持不变
+- `antMatchers` 替换为 `requestMatchers`
+- 认证管理器不再重写 `configure(AuthenticationManagerBuilder)`，改为从 `AuthenticationConfiguration` 获取，由 Spring Boot 自动装配 `CustomizedUserDetailService` 与 `PasswordEncoder`
+- 过滤器链放行 springdoc 文档路径：`/swagger-ui.html`、`/swagger-ui/**`、`/v3/api-docs/**`、`/swagger-resources/**`
+- 会话策略显式声明为 `SessionCreationPolicy.IF_REQUIRED`：登录验证码仍需 HttpSession 暂存，JWT 认证路径本身保持无状态
+
+#### 接口文档 springfox → springdoc-openapi
+- 移除 springfox-swagger2 / springfox-swagger-ui 2.9.2（与 Spring Boot 3 不兼容），引入 `springdoc-openapi-starter-webmvc-ui` 2.3.0
+- `SwaggerConfig` 由 `Docket` + `ApiInfoBuilder` 改为 `OpenAPI` + `Info` 模型，启动类移除 `@EnableSwagger2`
+- Swagger UI 访问路径沿用 `/swagger-ui.html`，OpenAPI JSON 迁至 `/v3/api-docs`
+
+#### javax → jakarta 命名空间迁移
+- `CheckTokenFilter`、`CustomerAccessDeniedHandler`、`LoginFailureHandler`、`HomeController`、`MemberServiceImpl` 的 Servlet / 注解包导入统一改为 `jakarta.*`
+- kaptcha 2.3.2 排除 `javax.servlet` 传递依赖：本项目只用 `DefaultKaptcha` 生成验证码图片，未使用 `KaptchaServlet`，排除后可适配 jakarta 环境
+
+### 修复（fix）
+
+#### JDK 9+ 兼容性
+- 验证码 Base64 编码由 `sun.misc.BASE64Encoder`（JDK 9 起已移除）改为标准库 `java.util.Base64`，选用无换行的 Basic 编码器
+- 首页统计实体 `TotalCount` 的会员数 / 员工数 / 器材数 / 订单数四个字段由 `int` 改为 `Long`，对齐 MyBatis-Plus 3.5.x `count` 的返回类型

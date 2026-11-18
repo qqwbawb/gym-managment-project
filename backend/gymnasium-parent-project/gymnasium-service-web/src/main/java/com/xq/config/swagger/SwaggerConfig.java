@@ -1,39 +1,34 @@
 package com.xq.config.swagger;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+/**
+ * 接口文档配置（springdoc-openapi）
+ *
+ * 原 springfox 2.9.2 与 Spring Boot 3 不兼容，已整体替换为 springdoc-openapi。
+ * 访问地址：
+ *   Swagger UI : http://localhost:8089/swagger-ui.html
+ *   OpenAPI JSON: http://localhost:8089/v3/api-docs
+ *
+ * 注：本项目未使用 @Api/@ApiOperation 等 swagger2 注解，因此接口会以
+ * Controller 分组 + 方法签名自动生成，无需额外标注。
+ */
 @Configuration
-@EnableSwagger2
-public class SwaggerConfig{
-    /**
-     * 创建Docket类型的对象,并使用Spring容器管理
-     * Docket是Swagger中的全局配置对象
-     * @return
-     */
+public class SwaggerConfig {
+
     @Bean
-    public Docket getDocket() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(swaggerDemoApiInfo())
-                .select()
-                .build();
-    }
-    private ApiInfo swaggerDemoApiInfo(){
-        return new ApiInfoBuilder()
-                .contact(new Contact("JAVA学习社区",
-                        "https://www.qq.com",
-                        "eric@qq.com")) //配置文档主体内容
-//文档标题
-                .title("这里是Swagger的标题")
-//文档描述
-                .description("这里是Swagger的描述")
-//文档版本
-                .version("1.0.0")
-                .build();
+    public OpenAPI gymOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("健身房管理系统接口文档")
+                        .description("GymSystem 后端 REST API 文档")
+                        .version("1.0.0")
+                        .contact(new Contact()
+                                .name("GymSystem")
+                                .email("support@gymsystem.local")));
     }
 }

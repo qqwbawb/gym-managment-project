@@ -15,23 +15,24 @@
   <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.18</version>
+        <version>3.2.12</version>
         <relativePath></relativePath>
     </parent>
 
     <properties>
-        <java.version>1.8</java.version>
-        <lombok-version>1.18.12</lombok-version>
-        <mybatis-plus.version>3.4.1</mybatis-plus.version>
-        <druid.version>1.2.1</druid.version>
+        <java.version>17</java.version>
+        <lombok-version>1.18.34</lombok-version>
+        <mybatis-plus.version>3.5.9</mybatis-plus.version>
+        <druid.version>1.2.23</druid.version>
         <kaptcha.version>2.3.2</kaptcha.version>
-        <fastjson.version>1.2.69</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <commons-lang.version>2.6</commons-lang.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-io.version>2.6</commons-io.version>
         <mysql-connection.version>8.0.21</mysql-connection.version>
         <jwt.version>3.10.3</jwt.version>
         <easypoi.version>4.2.0</easypoi.version>
+        <springdoc.version>2.3.0</springdoc.version>
     </properties>
 
     <dependencyManagement>
@@ -55,10 +56,17 @@
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>${druid.version}</version>
             </dependency>
-            <!--mybatis-plus依赖-->
+            <!--mybatis-plus依赖（Spring Boot 3 专用的 boot3-starter）-->
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <!-- 自 3.5.9 起，PaginationInnerInterceptor 等依赖 JSqlParser 的插件
+                 被拆到独立模块，需显式引入，否则编译期找不到该符号 -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-jsqlparser</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
             <!-- kaptcha 图形验证码 -->
@@ -98,7 +106,30 @@
                 <artifactId>easypoi-spring-boot-starter</artifactId>
                 <version>${easypoi.version}</version>
             </dependency>
+            <!-- springdoc-openapi：替代 springfox（springfox 与 Spring Boot 3 不兼容） -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- 保留方法参数名：Spring 6 / Spring Boot 3 依赖参数名解析
+                     @PathVariable / @RequestParam，未开启 -parameters 会导致运行时
+                     "Name for argument of type [...] not specified" 报错 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <parameters>true</parameters>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>

@@ -26,11 +26,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
-import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -58,9 +57,10 @@ public class LoginController {
         try{
             os = new ByteArrayOutputStream();
             ImageIO.write(image, "jpg", os);
-            BASE64Encoder encoder = new BASE64Encoder();
-            String base64 = encoder.encode(os.toByteArray());
-            String captcha = "data:image/jpeg;base64," + base64.replaceAll("\r\n", "");
+            // JDK 9+ 已移除 sun.misc.BASE64Encoder，改用标准库 java.util.Base64。
+            // MIME 编码器会插入换行，故用 Basic（无换行）编码器。
+            String base64 = Base64.getEncoder().encodeToString(os.toByteArray());
+            String captcha = "data:image/jpeg;base64," + base64;
             return new ResultVo<>("生成成功",200,captcha);
         }catch(IOException e){
             e.printStackTrace();
