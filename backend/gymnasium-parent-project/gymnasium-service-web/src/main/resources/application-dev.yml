@@ -1,8 +1,18 @@
 #配置端口号
 server:
   port: 8089
-#数据库相关配置
+
 spring:
+  # ---------- HTTP 客户端超时（对 Spring AI 调用模型生效） ----------
+  # 依据：Spring AI 的 openAiApi(...) 接收 ObjectProvider<RestClient.Builder>，会用容器里的 Builder；
+  # 而 Spring Boot 3.4+ 的 spring.http.client.* 正是用来配置这个 Builder。
+  # 不配的话同步接口 /api/ai/chat 会一直占住 Tomcat 请求线程，模型卡住时线程不释放。
+  http:
+    client:
+      connect-timeout: 30s
+      read-timeout: 120s
+
+  #数据库相关配置
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -14,6 +24,80 @@ spring:
       max-file-size: 200MB  #设置单个文件的大小  因为springboot内置tomact的的文件传输默认为10MB
       max-request-size: 500MB   #设置单次请求的文件总大小
       enabled: true    #千万注意要设置该参数，否则不生效
+
+  # ===================== AI 健身教练 =====================
+  ai:
+    # Spring AI 默认失败重试 10 次。模型超时场景会放大成「10 × 120s」，用户侧表现为接口挂死，
+    # 这里收紧到 1 次（真正的容错交给上层的 JSON 解析重试逻辑）。
+    retry:
+      max-attempts: 1
+
+    # 同时引入了 ollama 与 openai 两个 starter，必须显式指定启用哪个 ChatModel，
+    # 否则容器里会出现两个 ChatModel Bean 导致启动失败。
+    #
+    # 注意：这里填的是「协议 provider 名」，不是服务商名。
+    #   用 DeepSeek / 豆包 → openai（它们都兼容 OpenAI 协议，靠 base-url 区分）
+    #   用本地 Ollama     → ollama
+    # 具体服务商由下方 base-url + model 决定。
+    #
+    # 重要：spring-ai-starter-model-openai 是一个「全家桶」，会同时尝试装配
+    # Chat / Embedding / Image / Audio(Speech、Transcription) 等多个模型。
+    # 这些子模块不看 model.chat 的开关，只要 openai.api-key 为空就会抛
+    # "OpenAI API key must be set" 直接导致启动失败。
+    # 本项目只用聊天模型，因此把其余模块显式设为 none 关闭装配。
+    model:
+      chat: ${AI_PROVIDER:openai}
+      embedding: none
+      image: none
+      audio:
+        speech: none
+        transcription: none
+      moderation: none
+
+    # ---------- 本地模型：Ollama（备用，需本机已启动 ollama） ----------
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        options:
+          model: ${OLLAMA_MODEL:qwen2.5:7b}
+          temperature: 0.7
+          num-ctx: 8192
+
+    # ---------- 在线模型：OpenAI 兼容协议（默认启用 DeepSeek） ----------
+    # 换服务商只需改 base-url + api-key + model，代码无需改动：
+    #   DeepSeek  : https://api.deepseek.com                     model: deepseek-flash / deepseek-v4-pro
+    #   豆包方舟  : https://ark.cn-beijing.volces.com/api/v3     model: doubao-seed-2-1-lite-xxxx
+    #
+    # 注意 DeepSeek 有两个格式的地址，Spring AI 走 OpenAI 协议，必须用
+    #   https://api.deepseek.com        （OpenAI 格式）
+    # 而不是
+    #   https://api.deepseek.com/anthropic （Anthropic 格式，会 404）
+    openai:
+      base-url: ${OPENAI_BASE_URL:https://api.deepseek.com}
+      # API Key 不入库、不入 Git，本地通过环境变量 DEEPSEEK_API_KEY 提供。
+      #
+      # 为什么默认值不是空字符串：
+      #   Spring AI 的 openAiApi Bean 在创建时强制校验 key 非空，
+      #   空字符串会直接让应用启动失败（OpenAI API key must be set）。
+      #   这里给一个哨兵值，让 Bean 能正常创建、应用能启动；
+      #   真实调用前由 AiConfig#isApiKeyConfigured() 判断，
+      #   未配置时接口返回友好提示而不是 500。
+      api-key: ${OPENAI_API_KEY:${DEEPSEEK_API_KEY:NOT_CONFIGURED}}
+      chat:
+        # DeepSeek 模型名：deepseek-flash（便宜快） / deepseek-v4-pro（更强，贵约 3 倍）
+        #
+        # 关于思考模式（thinking）：
+        #   DeepSeek 默认开启 thinking，模型会先产出 reasoning_content 再给 content。
+        #   对我们的 JSON 解析无影响——reasoning_content 是独立字段，content 里仍是干净答案，
+        #   所以这里不强行关闭。代价是延迟和 token 消耗略高。
+        #   Spring AI 1.0.9 的 OpenAiChatOptions 尚不支持 extraBody 透传自定义字段，
+        #   若后续确需关闭，可升级到 Spring AI 2.x 后用 extraBody 传
+        #   {"thinking":{"type":"disabled"}}。
+        options:
+          model: ${OPENAI_MODEL:deepseek-flash}
+          temperature: 0.7
+        completions-path: /chat/completions
+
 # minio配置
 minio:
   endpoint: http://127.0.0.1:9000
@@ -41,3 +125,15 @@ ignore:
 logging:
   pattern:
     console: '%clr(%d{yyyy-MM-dd}){faded} [%thread] %clr(%-5level){green} %clr(%logger){cyan}- %clr(%msg){default}%n'
+
+# AI 模块自有配置
+ai:
+  coach:
+    # 单次生成允许的最大历时（毫秒），超时返回友好提示而不是让前端一直转圈
+    timeout-ms: 120000
+    # 拼进 Prompt 的近期训练记录天数
+    recent-log-days: 7
+    # 拼进 Prompt 的最近对话轮数（一问一答算一轮）
+    recent-chat-rounds: 5
+    # 规则引擎命中伤病冲突后，是否允许自动替换为安全替代动作
+    auto-fix-conflict: true

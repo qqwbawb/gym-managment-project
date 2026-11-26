@@ -30,10 +30,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
+        <!-- MySQL 驱动：新坐标 com.mysql:mysql-connector-j
+             旧的 mysql:mysql-connector-java 已被官方 relocate，Maven 会持续告警 -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
         </dependency>
         <!--mybatis-plus启动器
             Spring Boot 3 必须使用 mybatis-plus-spring-boot3-starter：
@@ -123,6 +124,33 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- ===== AI 健身教练：Spring AI =====
+             同时引入 Ollama（本地免费）与 OpenAI 兼容（在线，可指向 DeepSeek/豆包），
+             运行时通过 spring.ai.model.chat 配置切换，见 application-dev.yml -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-model-ollama</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-model-openai</artifactId>
+        </dependency>
+        <!-- Spring AI 的 stream()（流式输出）只支持 Reactive 栈，必须引入 webflux，
+             否则 ChatClient.stream() 在 Servlet 栈下不可用。主栈仍是 web(Servlet)。 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <!-- 说明：ChatClient 所在的 spring-ai-client-chat 是 starter 的传递依赖
+             （starter → autoconfigure-model-chat-client → client-chat），
+             无需在此重复声明。 -->
+        <!-- 单元测试：规则引擎与 JSON 解析是纯逻辑，必须有测试覆盖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

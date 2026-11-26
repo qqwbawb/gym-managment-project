@@ -8,7 +8,9 @@ export const userStore = defineStore('userStore', {
             userId: '',
             token: '',
             userType: '',
-            codeList: []
+            // 显式标注类型：空数组字面量会被推断为 never[]，
+            // 导致 permission.ts 中 codeList.includes(code) 的参数类型不匹配（TS2345）。
+            codeList: [] as string[]
         }
     },
     getters: {

@@ -19,7 +19,13 @@ function showError(msg: string) {
 //登录失效处理：清理本地状态并跳转登录页
 //用标志位保证「并发请求同时 401」时只处理一次，否则两个请求会各弹一次错误并重复跳转
 let redirectingToLogin = false;
-function handleAuthExpired(msg: string) {
+/**
+ * 登录失效统一处理。
+ *
+ * 导出供非 axios 链路复用（例如 AI 模块的 SSE 用 fetch 实现，
+ * 走不到 axios 拦截器，但 401/403 时同样需要清登录态并跳转）。
+ */
+export function handleAuthExpired(msg: string) {
   if (redirectingToLogin) {
     return;
   }
@@ -41,10 +47,17 @@ function handleAuthExpired(msg: string) {
   }, 300);
 }
 
+/**
+ * 后端接口基地址。
+ * 单独导出，保证 axios 链路与 SSE(fetch) 链路用的是同一个值，
+ * 不会出现「改了一处忘了另一处」导致生产环境打错地址。
+ */
+export const BASE_API = (process.env.BASE_API as string) || ''
+
 //axios请求配置
 const config = {
   //baseURL: 'http://localhost:8089', //真实请求接口的地址，真实上线是一个域名
-  baseURL: process.env.BASE_API,
+  baseURL: BASE_API,
   timeout: 10000,
   withCredentials: true //解决sesson不一致
 }
