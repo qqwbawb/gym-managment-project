@@ -1,6 +1,6 @@
 # 健身房管理系统（GymSystem）
 
-基于 **Spring Boot + Vue 3** 的前后端分离健身房管理系统。采用「先搭框架、再按模块迭代」的方式开发，覆盖系统管理、会员业务、课程、商品订单等 20+ 业务模块，具备 RBAC 权限体系、动态路由、JWT 认证授权、事务与并发安全处理等能力，**功能已开发完成**，各阶段均可独立运行、独立验证。
+基于 **Spring Boot + Vue 3** 的前后端分离健身房管理系统。采用「先搭框架、再按模块迭代」的方式开发，覆盖系统管理、会员业务、课程、商品订单等 20+ 业务模块，具备 RBAC 权限体系、动态路由、JWT 认证授权、事务与并发安全处理等能力；并集成 **AI 健身教练**（Spring AI + 三层记忆 + 规则引擎兜底）。**功能已开发完成**，各阶段均可独立运行、独立验证。
 
 ## 技术栈
 
@@ -9,16 +9,18 @@
 | 技术 | 版本 | 用途 |
 |------|------|------|
 | JDK | 17 | 运行环境 |
-| Spring Boot | 3.2.12 | 基础框架 |
+| Spring Boot | 3.5.16 | 基础框架 |
 | Maven | 3.6+ | 多模块构建 |
 | MyBatis-Plus | 3.5.9 | ORM / 分页插件 |
 | MySQL | 8.0 | 数据库 |
 | Druid | 1.2.23 | 数据库连接池 |
 | Spring Security | 6.x | 认证与接口级鉴权（`@PreAuthorize`） |
 | java-jwt | 3.10.3 | 登录令牌（JWT 无状态认证） |
+| Spring AI | 1.0.9 | AI 健身教练（OpenAI 兼容 / Ollama 双 provider） |
+| Spring WebFlux | 6.x | 流式响应底层（SSE） |
 | MinIO | 8.3.9 | 对象存储（图片上传 / 回显） |
 | kaptcha | 2.3.2 | 图形验证码 |
-| springdoc-openapi | 2.3.0 | 接口文档（Swagger UI） |
+| springdoc-openapi | 2.8.17 | 接口文档（Swagger UI） |
 
 ### 前端（fronted）
 
@@ -55,9 +57,9 @@ GymSystem
 │           ├── layout/               # 主布局（菜单/头部/面包屑/Tabs）
 │           ├── router/               # 路由配置
 │           ├── store/                # Pinia 状态管理
-│           └── views/                # 页面组件（system/member 等）
-├── docs/                             # 项目文档（README / CHANGELOG）
-├── sql/                              # 数据库初始化脚本（建表 + 初始数据）
+│           └── views/                # 页面组件（system/member/course/goods/ai 等）
+├── docs/                             # 项目文档（README / CHANGELOG / AI_COACH）
+├── sql/                              # 数据库初始化脚本（主库 + AI 模块建表 / 菜单 / 演示数据）
 └── LICENSE                           # 开源协议（MIT）
 ```
 
@@ -201,6 +203,26 @@ GymSystem
 - 后端 `home` 模块：统计总数（会员 / 订单 / 员工 / 器材）、最近反馈、热销商品 / 热销卡 / 热销课程
 - 前端集成 ECharts：首页看板完成总数统计卡片 + 热销图表 + 最近反馈
 
+### 已完成：阶段七 —— AI 健身教练模块（会员端）
+
+**后端（`com.xq.web.ai`）**
+- 三层记忆：用户画像 `ai_user_profile`、训练打卡 `ai_training_log`、多轮对话 `ai_chat_message`，Prompt 由 `PromptBuilder` 统一组装
+- 三道防线：System Prompt 约束 → `AiPlanParser` 解析清洗 JSON → `ExerciseRuleEngine` 校验并真实替换冲突动作（替代动作按会员实际器械过滤）
+- 双通道生成：同步 `/api/ai/chat` 与 SSE `/api/ai/chat/stream`（`token` / `result` / `error` / `done` / `ping`）
+- `AiPlanPipeline` 统一两条链路的校验、落库与课程推荐，`persist()` 是唯一事务边界；`AiGenerationGuard` 负责单会员互斥与 4 分钟超时接管
+- `memberId` 一律取自登录态（`CurrentMemberResolver`），三个控制器统一 `@PreAuthorize`，菜单只分配给会员角色
+- 模型 provider 通过 `spring.ai.model.chat` 切换（DeepSeek / Ollama），不改代码
+
+**前端**
+- `views/ai/AiCoach.vue`：对话、打字机流式输出、计划表格、训练打卡、新建对话
+- `views/ai/AiProfile.vue`：目标 / 水平 / 频次 / 时长 / 器械 / 伤病画像表单
+- `views/ai/AiPlanList.vue`：历史计划列表与详情
+- `api/ai/index.ts`：fetch + ReadableStream 手写 SSE 解析，401 / 403 分流，断流识别
+
+**数据库与测试**
+- `sql/ai_schema.sql`、`sql/ai_menu.sql`（按 code 幂等，仅分配会员角色）、`sql/ai_demo_seed.sql`（可选演示数据）
+- 28 个单元测试：规则引擎 9、计划解析 14、生成锁 5
+
 ### 开发路线图
 
 | 阶段 | 内容 | 状态 |
@@ -211,6 +233,7 @@ GymSystem
 | 阶段四 | 课程管理：课程维护与图片上传、选课报名与我的课程 | 已完成 |
 | 阶段五 | 业务扩展：器材、商品、失物招领、反馈、订单 | 已完成 |
 | 阶段六 | 登录认证、权限树分配、动态菜单、Spring Security、首页数据看板 | 已完成 |
+| 阶段七 | AI 健身教练：三层记忆、三道防线、同步 / SSE 双通道、课程推荐 | 已完成 |
 
 ## 环境要求
 
@@ -219,15 +242,28 @@ GymSystem
 - MySQL 8.0（数据库名：`gym_system`）
 - MinIO（图片上传 / 回显功能需要，默认 `127.0.0.1:9000`，bucket 名 `gymnasium`）
 - Node.js 18+、npm
+- AI 模型（二选一，仅 AI 健身教练模块需要）：
+  - Ollama 本地模型（默认 `qwen2.5:7b`，免费）
+  - 或 DeepSeek / 豆包等 OpenAI 兼容服务的 API Key（环境变量 `DEEPSEEK_API_KEY`）
+  - 未配置时后端可正常启动，只是生成计划会返回「未配置 API Key」
 
 ## 快速启动
 
 ### 1. 初始化数据库
 
 1. 创建数据库：`CREATE DATABASE gym_system DEFAULT CHARACTER SET utf8mb4;`
-2. 执行 `sql/gym_system_full_rebuild.sql`（建表 + 初始数据）。
+2. 执行 `sql/gym_system_full_rebuild.sql`（主库建表 + 初始数据）。
+3. AI 健身教练模块（菜单必须执行，演示数据可选）：
 
-> ⚠️ 该脚本为**全量重建**脚本，内含 `DROP TABLE IF EXISTS`，执行会**清空 `gym_system` 库中的既有数据**。请先备份。
+   ```bash
+   mysql -u root -p gym_system < sql/ai_schema.sql
+   mysql -u root -p gym_system < sql/ai_menu.sql
+   mysql -u root -p gym_system < sql/ai_demo_seed.sql   # 可选
+   ```
+
+   > `ai_schema.sql` 会先 `DROP` 再 `CREATE` 这 4 张 AI 表，重复执行会清空已有 AI 数据。
+
+> ⚠️ `gym_system_full_rebuild.sql` 为**全量重建**脚本，内含 `DROP TABLE IF EXISTS`，执行会**清空 `gym_system` 库中的既有数据**。请先备份。
 
 ### 2. 演示账号
 
@@ -238,15 +274,17 @@ GymSystem
 | 员工端 | `root` / `admin` | 超级管理员（可见全部菜单） |
 | 员工端 | `zs001` / `wangwu` | 普通员工 |
 | 员工端 | `ls001` / `2020001` | 教练 |
-| 会员端 | `2022001` | 会员（张三） |
+| 会员端 | `2022001` | 会员（张三），同时是 AI 演示账号 |
 
 > 登录页需先选择「用户类型」再填写账号：员工对应「员工」，会员对应「会员」。
+> AI 演示数据（画像、训练记录、历史计划）默认挂在 `2022001` 上，需先执行 `sql/ai_demo_seed.sql`。
 
 ### 3. 启动后端
 
 1. 修改 `backend/gymnasium-parent-project/gymnasium-service-web/src/main/resources/application-dev.yml` 中的数据库账号密码（以及 MinIO 地址、JWT 密钥）；
-2. IDEA 中打开 `backend/gymnasium-parent-project`，运行 `GYMServiceWebApplication` 启动类；
-3. 启动成功后访问接口文档：`http://localhost:8089/swagger-ui.html`。
+2. 配置 AI 模型（可选）：设置环境变量 `DEEPSEEK_API_KEY` 使用在线模型，或 `AI_PROVIDER=ollama` 使用本地 Ollama；详见 [`AI_COACH.md`](./AI_COACH.md) 第四节；
+3. IDEA 中打开 `backend/gymnasium-parent-project`，运行 `GYMServiceWebApplication` 启动类；
+4. 启动成功后访问接口文档：`http://localhost:8089/swagger-ui.html`。
 
 ### 4. 启动前端
 

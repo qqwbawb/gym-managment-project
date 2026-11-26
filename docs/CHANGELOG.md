@@ -340,3 +340,69 @@
 #### JDK 9+ 兼容性
 - 验证码 Base64 编码由 `sun.misc.BASE64Encoder`（JDK 9 起已移除）改为标准库 `java.util.Base64`，选用无换行的 Basic 编码器
 - 首页统计实体 `TotalCount` 的会员数 / 员工数 / 器材数 / 订单数四个字段由 `int` 改为 `Long`，对齐 MyBatis-Plus 3.5.x `count` 的返回类型
+
+## [0.19.0] - 2026-11-26
+
+### 新增（feat）
+
+#### AI 健身教练模块（会员端）
+- 后端新增 `com.xq.web.ai` 包，按职责拆分为 config / controller / entity / mapper / rule / service
+- 三层记忆：用户画像 `ai_user_profile`（表单事实数据，模型无权修改）、训练打卡 `ai_training_log`（近 7 天练过什么）、对话历史 `ai_chat_message`（多轮上下文）
+- 三道防线：System Prompt 约束 → `AiPlanParser` 解析并清洗 JSON → `ExerciseRuleEngine` 确定性校验并真实替换冲突动作（替代动作按会员实际器械过滤）
+- 双通道生成：同步 `POST /api/ai/chat` 与 SSE 流式 `POST /api/ai/chat/stream`（`token` 打字机、`result` 结构化结果、`error`、`done`、`ping` 心跳）
+- 新增 `AiPlanPipeline`：收敛同步 / 流式两条链路的「校验 → 修复 → 落库 → 课程推荐」，`persist()` 是唯一事务边界，模型调用始终在事务外，避免长时间占用数据库连接
+- 新增 `AiGenerationGuard`：同一会员同时只允许一个生成任务，凭证式释放 + 4 分钟超时接管，防止连点重复消耗 token、也防止异常时永久锁死
+- 新增 `CurrentMemberResolver`：`memberId` 一律取自登录态，所有查询强制带 `memberId`，防止改参数读他人画像 / 计划（水平越权）
+- 课程推荐只展示、不代报名，报名仍走 `MemberCourseService.joinCourse()` 的正式事务与余额校验链路
+
+#### 前端
+- 新增 `views/ai/AiCoach.vue`（对话、计划卡片、训练打卡、新建对话）、`AiProfile.vue`（画像表单）、`AiPlanList.vue`（历史计划）
+- 新增 `api/ai/index.ts`：fetch + ReadableStream 手写 SSE 解析（axios 无法逐块读取响应体）
+  - 401 与 403 分开处理，403 不再被误判为登录失效踢下线
+  - 识别项目统一的「HTTP 200 + `code:700`」无权限响应，不再当成 SSE 帧解析失败
+  - 以收到 `result` 或 `done` 判定正常收尾，断流时提示「连接中断，内容可能不完整」
+- 新增「新建对话」入口：清空 `sessionId`、计划与消息，避免上下文永久串台
+
+#### 数据库
+- 新增 `sql/ai_schema.sql`：4 张表 + 画像唯一索引 `uk_ai_profile_member` + 打卡唯一索引 `uk_ai_log_member_plan_date`
+- 新增 `sql/ai_menu.sql`：按菜单 `code` 幂等写入，不硬编码 `menu_id`，只分配给会员角色（`role_id = 5`）
+- 新增 `sql/ai_demo_seed.sql`：可选演示数据（减脂 / 初级 / 膝伤画像 + 训练记录 + 计划 + 对话）
+
+### 升级（build）
+- Spring Boot 3.2.12 → 3.5.16，接入 Spring AI 1.0.9（`spring-ai-bom` 统一管理）
+- 新增 `spring-boot-starter-webflux`：Spring AI 的流式响应依赖
+- springdoc-openapi 2.3.0 → 2.8.17
+- 双 provider 切换：`spring.ai.model.chat` 取 `openai`（DeepSeek / 豆包等 OpenAI 兼容协议）或 `ollama`（qwen2.5:7b），默认 DeepSeek；`embedding / image / audio / moderation` 显式设为 `none`，避免空 api-key 导致启动失败
+- `spring.ai.retry.max-attempts` 收紧为 1：Spring AI 默认失败重试 10 次，模型超时会被放大成「10 × 120s」
+- 新增 `spring.http.client` 连接 / 读取超时（30s / 120s），作为模型调用的底层兜底
+- 移除 Boot 3 已不需要的 `spring.mvc.pathmatch.matching-strategy: ant_path_matcher`
+
+### 修复（fix）
+
+#### 链路一致性
+- 流式链路补齐 `recommendCourses`，此前默认的流式路径永远看不到课程推荐
+- 流式链路修复时改为传入会员不可用器械，避免把受伤动作换成会员没有的器械
+- `@Transactional` 从包含模型调用的方法移到 `AiPlanPipeline.persist()`，消除长事务占满连接池的风险
+
+#### 流式稳定性
+- 新增 15 秒 SSE 心跳（`ping`），避免模型思考阶段被网关判定空闲而断连
+- 前端点「停止」或连接断开时置取消位，`blockLast` 超时中断模型流，取消后不再落库（避免烧 token、避免历史里出现用户没见过的计划）
+- `blockLast(Duration)` 增加超时，配合 `AiGenerationGuard` 超时接管，双重防止会员被永久锁死
+- 正常结束补发 `done`，前端据此区分「正常完成」和「网络中断」
+- 同步 / 流式统一异常文案：超时、连接失败翻译为中文，不再把 `Timeout on blocking read for 120000 MILLISECONDS` 直接抛给用户
+
+#### 数据校验
+- 训练打卡：拦截未来日期；把 `train_date` 统一归一到当天 0 点，并用「当天 0 点 ≤ x < 次日 0 点」区间做同计划同日去重（DATE 列直接用带时分秒的 Date 比较会永远不相等）
+- 训练打卡形成三层防重：业务预检 → 唯一索引 `uk_ai_log_member_plan_date` → `DuplicateKeyException` 转为友好提示
+- `ai_plan.title` / `summary` 按列宽截断（128 / 500），避免模型给出超长标题导致整笔事务回滚
+- 画像首次保存并发触发 `DuplicateKeyException` 时转为更新，不再返回 500
+- 历史计划分页参数 clamp 到 `1–50`，防止一次拉全表
+- `sessionId` 在调模型前校验长度（≤ 64），避免模型白跑后落库才报 `Data too long`
+
+### 工程优化（improve）
+- 新增单元测试 28 个，全部通过：`ExerciseRuleEngineTest` 9 个、`AiPlanParserTest` 14 个、`AiGenerationGuardTest` 5 个
+- 解析结果上限：训练日最多 14 天、每天最多 15 个动作，超限截断并记录告警
+- `bodyPart` 中文归一（胸 / 背 / 腿 / 肩 / 手臂 / 核心 / 有氧 / 全身），修复推荐课程关键词匹配为空
+- 规则引擎替代动作修正：膝关节不再降级为「直腿硬拉」、下背不再降级为「坐姿划船」，避免替代动作本身命中禁忌
+- 前端 `codeList` 显式标注 `string[]`，消除空数组被推断为 `never[]` 导致的 TS2345
+- 新增设计文档 `docs/AI_COACH.md`：三层记忆、三道防线、环境准备、接口与 SSE 事件、验收清单、实测记录
